@@ -1,10 +1,11 @@
-# { } TestScript
+# TestScript
 
-**Pruebas legibles. Flows reutilizables. Una historia de ejecución.**
+<img src="docs/assets/logo.svg" width="80" height="80" alt="TestScript" />
+
 
 Lenguaje tipado para testing Web/API: intérprete Python + Lark, archivos `.tscr` y comando `tscr`.
 
-**0.1.0 experimental.** Todavía no publicado en PyPI. `testscript` en PyPI pertenece a otro proyecto; nuestra distribución es `testscript-lang`.
+**0.2.0 experimental.** Todavía no publicado en PyPI. `testscript` en PyPI pertenece a otro proyecto; nuestra distribución es `testscript-lang`.
 
 Desde la carpeta del código fuente:
 

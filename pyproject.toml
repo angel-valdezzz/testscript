@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "testscript-lang"
-version = "0.1.0"
+version = "0.2.0"
 description = "A typed, readable testing language for Web and API workflows"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,7 +15,7 @@ dependencies = ["lark>=1.2,<2", "httpx>=0.28,<1", "PyYAML>=6,<7"]
 [project.optional-dependencies]
 playwright = ["playwright>=1.50,<2"]
 selenium = ["selenium>=4.28,<5"]
-dev = ["pytest>=8,<10", "build>=1,<2", "ruff>=0.11,<1", "mkdocs-material>=9.6,<10"]
+dev = ["pytest>=8,<10", "build>=1,<2", "ruff>=0.11,<1", "mkdocs-material>=9.7,<10", "mkdocs>=1.6,<2", "twine>=6,<7"]
 
 [project.scripts]
 tscr = "testscript.cli:main"

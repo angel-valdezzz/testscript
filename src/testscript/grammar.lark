@@ -68,12 +68,18 @@ arguments: argument ("," argument)*
      | "null" -> null
      | REGEX -> regex
      | NAME -> variable
+     | http_request
      | list_expr
      | map_expr
      | "(" expr ")"
 list_expr: "[" [expr ("," expr)* [","]] "]"
-map_expr: "{" [pair ("," pair)* [","]] "}"
+map_expr: "{" [pair (","? pair)* [","]] "}"
 pair: (STRING | NAME) ":" expr
+http_request: HTTP_METHOD expr "{" http_option* "}"
+HTTP_METHOD.3: /(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b/
+http_option: "headers" expr -> http_headers
+           | "query" expr -> http_query
+           | "body" "json" expr -> http_body
 REGEX.3: /r"(?:[^"\\]|\\.)*"/
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /(?:[0-9]+(?:\.[0-9]+)?)/

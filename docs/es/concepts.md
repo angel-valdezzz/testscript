@@ -18,7 +18,7 @@ Agrupa comportamiento reutilizable. Puede interactuar con Web/API, validar, llam
 
 ```tscr
 flow createUser(baseUrl: String, name: String) -> Map[String, Any] {
-    var response = api.post("${baseUrl}/users", body: {name: name})
+    var response = POST "${baseUrl}/users" { body json {name: name} }
     expect response.status == 201
     return response.json
 }
@@ -48,7 +48,7 @@ test "Session" using [session] { expect len(baseUrl) > 0 }
 
 ## record and data
 
-Un record define campos nombrados y tipados. Se construye con argumentos nombrados y permite acceso por punto o corchetes. La modificación de campos y las clases no están implementadas en v0.1.
+Un record define campos nombrados y tipados. Se construye con argumentos nombrados y permite acceso por punto o corchetes. La modificación de campos y las clases no están implementadas en v0.2.
 
 `data` declara datos a nivel de módulo. Puede cargar CSV, JSON o YAML; una prueba parametrizada genera un resultado por fila. Consulta [datos y fixtures](data-fixtures.md).
 
@@ -61,3 +61,22 @@ Una assertion registra una verificación exitosa o fallida. Si un catch captura 
 ## Convenciones
 
 `camelCase` para variables, datos, funciones, flows y fixtures; `PascalCase` para records/tipos; `kebab-case.tscr` para archivos. Los títulos de tests/steps son textos descriptivos. Las convenciones generan avisos del linter.
+
+## var / const y returns
+
+Variables y constantes usan `camelCase`. `var` permite reasignar; `const` fija el binding (no congela profundamente una List/Map). Ambas reciben returns de flows o funciones. `List[T]` y `Map[K, V]` nombran tipos de colección; sus valores usan nombres como `userList` y `userById`.
+
+```tscr
+fn greeting(name: String) -> String { return "Hello, ${name}" }
+flow verifiedName(name: String) -> String {
+    expect len(name) > 0
+    return greeting(name)
+}
+test "Returns" {
+    var userName = verifiedName("Angel")
+    const expectedName = greeting("Angel")
+    expect userName == expectedName
+}
+```
+
+`step` es una agrupación opcional en la línea de tiempo, similar en propósito a GROUP de Robot Framework. Tiene ámbito de bloque propio y no se puede llamar. `flow` es reutilizable y puede devolver un valor.

@@ -56,6 +56,7 @@ def test_dataset_each_row_is_a_result(tmp_path):
 test "User" tags ["data"] for each user in users { expect len(user.name) == 1 }""",
     )
     assert [r.name for r in results] == ["User [1]", "User [2]"]
+    assert all(r.tags == ["data"] for r in results)
 
 
 def test_assertion_catch_does_not_erase_failure(tmp_path):
@@ -117,7 +118,8 @@ test "Skip" using [first, second] { skip "Unavailable" }""",
         ('test "X" { expect unknown == 1 }', "Unknown name"),
         ('fn x() { open "https://example.com" }', "fn cannot"),
         ("flow x() { expect true } fn y() { x() }", "fn cannot call flow"),
-        ('fn x() { api.get("https://example.com") }', "fn cannot"),
+        ('fn x() { GET "https://example.com" {} }', "fn cannot"),
+        ('test "Legacy" { api.get("https://example.com") }', "removed in 0.2"),
         ('test "X" { return 1 }', "return is only"),
         ('test "X" { expect 1 }', "Bool"),
         ('test "X" { try { expect true } }', "try requires"),
@@ -225,7 +227,11 @@ class ApiHandler(BaseHTTPRequestHandler):
         self.send_response(201)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
-        self.wfile.write(body)
+        self.wfile.write(json.dumps({
+            **json.loads(body), "path": self.path,
+            "token": self.headers.get("Authorization"),
+            "contentType": self.headers.get("Content-Type"),
+        }).encode())
 
     def log_message(self, *_):
         pass
@@ -246,10 +252,10 @@ def test_real_http_response_and_negative_status(tmp_path, local_api):
     results = execute(
         tmp_path,
         f'''test "HTTP" {{
- var created = api.post("{local_api}/users", body: {{name: "Angel"}})
+ var created = POST "{local_api}/users" {{ body json {{name: "Angel"}} }}
  expect created.status == 201
  expect created.json.name == "Angel"
- var missing = api.get("{local_api}/missing")
+ var missing = GET "{local_api}/missing" {{}}
  expect missing.status == 404
 }}''',
     )
@@ -260,9 +266,74 @@ def test_real_http_response_and_negative_status(tmp_path, local_api):
 def test_transport_error_is_catchable(tmp_path):
     results = execute(
         tmp_path,
-        """test "Transport" { try { var response = api.get("http://127.0.0.1:1") }
+        """test "Transport" { try { var response = GET "http://127.0.0.1:1" {} }
 catch error { expect error.message contains "refused" } }""",
     )
+    assert results[0].status == "passed"
+
+
+def test_http_loaded_body_headers_query_and_flow_return(tmp_path, local_api):
+    (tmp_path / "payload.json").write_text('{"name":"Angel"}')
+    runtime = program(tmp_path, '''
+flow createUser() -> Map[String, Any] {
+    var payload = load("payload.json")
+    return POST "/users" {
+        headers { "Authorization": "Bearer secret" }
+        query { notify: true }
+        body json payload
+    }
+}
+test "Declarative request" {
+    const response = createUser()
+    expect response.status == 201
+    expect response.json.name == "Angel"
+    expect response.json.token == "Bearer secret"
+    expect response.json.path == "/users?notify=true"
+    expect response.json.contentType == "application/json"
+}
+''', config={"base_url": local_api})
+    assert not Analyzer(runtime).analyze()
+    assert runtime.run()[0].status == "passed"
+
+
+@pytest.mark.parametrize("method", ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"])
+def test_http_method_dispatch(tmp_path, method):
+    runtime = program(tmp_path, f'test "Request" {{ var r = {method} "https://example.com" {{}} expect r.status == 200 }}')
+    calls = []
+    runtime.http.request = lambda verb, url, **options: calls.append((verb, url, options)) or {"status": 200}
+    assert not Analyzer(runtime).analyze()
+    assert runtime.run()[0].status == "passed"
+    assert calls == [(method, "https://example.com", {})]
+
+
+@pytest.mark.parametrize("expression, message", [
+    ('GET 42 {}', "HTTP URL must be String"),
+    ('GET "https://example.com" { headers [] }', "HTTP headers must be Map"),
+    ('GET "https://example.com" { query 42 }', "HTTP query must be Map"),
+    ('GET "https://example.com" { query {} query {} }', "Duplicate HTTP option"),
+])
+def test_invalid_http_contract(tmp_path, expression, message):
+    runtime = program(tmp_path, f'test "Request" {{ var r = {expression} }}')
+    assert any(message in str(d) for d in Analyzer(runtime).analyze())
+
+
+def test_http_is_not_executed_during_discovery(tmp_path):
+    with pytest.raises(ScriptError, match="HTTP requests are only allowed"):
+        program(tmp_path, 'const response = GET "https://example.com" {}')
+
+
+def test_invalid_dynamic_headers_fail_before_network(tmp_path):
+    results = execute(tmp_path, 'test "Invalid header" { var r = GET "http://127.0.0.1:1" { headers {token: 1} } }')
+    assert results[0].status == "failed"
+    assert "String values" in results[0].errors[0]
+
+
+def test_maps_allow_optional_commas(tmp_path):
+    results = execute(tmp_path, '''test "Map" {
+        var body = { name: "Angel" role: "tester", preferences: {theme: "dark"}, }
+        expect body.role == "tester"
+        expect body.preferences.theme == "dark"
+    }''')
     assert results[0].status == "passed"
 
 

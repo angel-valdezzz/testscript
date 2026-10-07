@@ -1,36 +1,18 @@
-# Validation — 2026-10-07
+# Validation — 0.2.0 / 2026-10-07
 
-Validated on Linux / Python 3.12.14:
+Local Linux / Python 3.12.14:
 
-- **41 pytest checks passed**, including HTTP against a local service and real Playwright/Selenium browser workflows.
-- **7 example cases passed with each provider**: two API, four core/data and one Web.
+- 75 automated language/configuration checks passed. Browser integration tests are opt-in and skipped in this local core run.
+- HTTP tests use a real local server for JSON payloads, headers, query parameters, 404 inspection and loaded bodies. Seven methods have dispatch coverage.
+- Configuration rejects unsupported provider/browser pairs, invalid dimensions and incompatible maximization settings. CLI override precedence is covered.
 - Ruff checks passed for source, tests and scripts.
-- **15 pages per documentation language**, 40 TestScript snippets parsed; both MkDocs builds passed strict mode.
-- Desktop (1440 px) and mobile (390 px) reviewed; no horizontal page overflow; Web/API tabs, keyboard tab navigation, native syntax highlighting and JavaScript errors checked.
-- Wheel and sdist built successfully.
-- Wheel installed into a clean virtual environment, `pip check` passed, CLI version/check/run verified.
+- 15 pages per documentation language, 44 TestScript excerpts parsed; both MkDocs builds passed strict mode.
+- Wheel and sdist built successfully; clean-environment wheel installation, `pip check`, CLI version and four core/data cases passed.
 
-Browser verification used Chromium 153 and compatible ChromeDriver 153 in this environment. The normal Playwright browser download endpoint was unavailable here, so a compatible local binary was supplied through `TSCR_BROWSER_EXECUTABLE`; Selenium used `TSCR_DRIVER_EXECUTABLE`. Container-only verification supplied `TSCR_BROWSER_NO_SANDBOX=1`; it is not enabled by default.
+The CI browser matrix covers Playwright Chromium, Firefox, WebKit, Chrome and Edge, and Selenium Chrome, Firefox and Edge. Each job exercises both private and normal temporary profiles, viewport dimensions, browser actions, screenshots and cookie isolation across tests.
 
-## Remote verification and publication
+Maximization is validated as configuration; native headed maximization depends on the display/window manager and has not been tested in this headless environment. Windows/macOS installation has not been tested.
 
-The public repository is live at https://github.com/angel-valdezzz/testscript.
+The new landing direction is pending visual selection. Current-layout theme tokens and documentation palettes are updated; this release does not claim the final landing redesign.
 
-All six GitHub Actions verification jobs passed for commit `23e75db7d9eaac529c2a565ad786fd804e05409b`: core on Python 3.12, 3.13 and 3.14, real Playwright and Selenium browser workflows, and documentation/distribution builds.
-
-Verification run: https://github.com/angel-valdezzz/testscript/actions/runs/37693918326
-
-The documentation build and deployment passed. English and Spanish pages are live at https://angel-valdezzz.github.io/testscript/ and https://angel-valdezzz.github.io/testscript/es/. The Spanish landing page was reviewed after publication.
-
-Pages run: https://github.com/angel-valdezzz/testscript/actions/runs/37693918357
-
-PyPI publication remains pending. Windows/macOS installation has not been tested here.
-
-For a local documentation preview:
-
-```bash
-python scripts/build_docs.py
-python scripts/serve_docs.py
-```
-
-The deliverable archive includes the prebuilt `site/` folder, a wheel and a Git history bundle. The bundle can be used with `git clone git-history.bundle restored-testscript`.
+PyPI publication is pending account/Trusted Publisher configuration. See [publishing](PUBLISHING.md).

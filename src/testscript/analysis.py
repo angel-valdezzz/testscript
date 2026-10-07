@@ -118,6 +118,8 @@ class Analyzer:
             return TypeSpec("Regex")
         if kind == "variable":
             name = str(children[0])
+            if name == "api" and name not in scope and self.definition(name) is None:
+                self.diagnostic(node, "api.* was removed in 0.2; use GET/POST url { ... }")
             typ, _ = self.symbol(name, scope, node)
             if (
                 self.pure
@@ -137,6 +139,24 @@ class Analyzer:
             types = [self.infer(c, scope) for c in children]
             element = types[0] if types and all(t == types[0] for t in types) else TypeSpec()
             return TypeSpec("List", (element,))
+        if kind == "http_request":
+            if self.pure:
+                self.diagnostic(node, "fn cannot send HTTP requests")
+            if self.flows_only and self.in_test:
+                self.diagnostic(node, "tests-use-flows-only: move HTTP actions to a flow", "warning")
+            url_type = self.infer(children[1], scope)
+            if url_type.name not in {"String", "Any"}:
+                self.diagnostic(node, "HTTP URL must be String")
+            seen = set()
+            for option in children[2:]:
+                key = str(option.data).removeprefix("http_")
+                if key in seen:
+                    self.diagnostic(option, f"Duplicate HTTP option '{key}'")
+                seen.add(key)
+                typ = self.infer(option.children[0], scope)
+                if key in {"headers", "query"} and typ.name not in {"Map", "Any"}:
+                    self.diagnostic(option, f"HTTP {key} must be Map")
+            return TypeSpec("Map", (TypeSpec("String"), TypeSpec()))
         if kind == "map_expr":
             for pair in children:
                 self.infer(pair.children[1], scope)
@@ -185,8 +205,6 @@ class Analyzer:
                     typ = typ.args[-1] if typ.args else TypeSpec()
                     value = None
                 elif part.data == "call":
-                    if self.flows_only and self.in_test and name and name.startswith("api."):
-                        self.diagnostic(part, "tests-use-flows-only: move HTTP actions to a flow", "warning")
                     args, kwargs = [], {}
                     for arg in part.children[0].children if part.children else []:
                         if arg.data == "named_argument":

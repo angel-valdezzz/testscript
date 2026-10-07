@@ -3,7 +3,7 @@
 TestScript es un intérprete de Python para programas `.tscr`. Escribes TestScript; necesitas Python 3.12+ instalado para ejecutar el intérprete.
 
 !!! warning "Estado de distribución"
-    La versión 0.1.0 es experimental y todavía no está publicada en PyPI. `testscript` en PyPI es otro proyecto. Nuestra distribución se llama `testscript-lang`; el nombre no queda reservado hasta publicarlo. Usa el código fuente o el wheel.
+    La versión 0.2.0 es experimental y todavía no está publicada en PyPI. `testscript` en PyPI es otro proyecto. Nuestra distribución se llama `testscript-lang`; el nombre no queda reservado hasta publicarlo. Usa el código fuente o el wheel.
 
 ## Desde el código fuente
 
@@ -41,7 +41,7 @@ Se esperan cuatro resultados exitosos. Abre `testscript-results/report.html`; en
     tscr run examples/web.tscr --provider selenium
     ```
 
-    Instala Chrome. Selenium Manager resuelve el driver compatible y puede necesitar red. El MVP utiliza Chrome/Chromium.
+    Instala Chrome. Selenium Manager resuelve el driver compatible y puede necesitar red. Se admiten Chrome, Edge y Firefox; elige el navegador en configuración.
 
 Antes de ejecutar los ejemplos Web/API, inicia el laboratorio en otra terminal:
 
@@ -54,7 +54,7 @@ El paquete base cubre core/API. Los motores Web son dependencias opcionales; sus
 ## Desde un wheel
 
 ```bash
-python -m pip install /ruta/testscript_lang-0.1.0-py3-none-any.whl
+python -m pip install /ruta/testscript_lang-0.2.0-py3-none-any.whl
 ```
 
 El wheel instala intérprete y CLI; conserva los ejemplos por separado. Las instrucciones de PyPI se agregarán después de publicar realmente el paquete.

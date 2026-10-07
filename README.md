@@ -1,16 +1,19 @@
 <div align="center">
 
-# { } TestScript
+<img src="docs/assets/logo.svg" width="80" height="80" alt="TestScript" />
 
-**Readable tests. Reusable flows. One execution story.**
+# TestScript
+
 
 A typed testing language for Web and API automation. Python interpreter · Lark grammar · `.tscr` files · `tscr` CLI.
 
-[User Guide](https://angel-valdezzz.github.io/testscript/) · [Language Reference](docs/en/language.md) · [Examples](examples/) · [Español](README.es.md)
+[User Guide](https://angel-valdezzz.github.io/testscript/) · [Language Reference](https://angel-valdezzz.github.io/testscript/language/) · [Examples](examples/) · [Español](README.es.md)
+
+[![Version](https://img.shields.io/badge/version-0.2.0-c4f581)](https://github.com/angel-valdezzz/testscript/releases/tag/v0.2.0) [![CI](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml/badge.svg)](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml)
 
 </div>
 
-> **0.1.0 / experimental.** The implementation and language specification evolve together. Not yet published on PyPI. The PyPI name `testscript` belongs to an unrelated project; this distribution uses `testscript-lang`.
+> **0.2.0 / experimental.** The implementation and language specification evolve together. Not yet published on PyPI. The PyPI name `testscript` belongs to an unrelated project; this distribution uses `testscript-lang`.
 
 ## Install from source
 

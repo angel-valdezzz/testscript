@@ -4,7 +4,7 @@
 
 ```tscr
 test "Handle an operational error" {
-    try { var response = api.get("http://127.0.0.1:1") }
+    try { var response = GET "http://127.0.0.1:1" {} }
     catch error { log error.message }
     finally { log "Finished" }
 }
@@ -22,7 +22,7 @@ Un error operativo capturado puede manejarse y permitir un resultado exitoso. Un
 | `failed` | Assertion fallida, error sin manejar o error de limpieza |
 | `skipped` | `skip "motivo"` terminó el caso sin un fallo anterior |
 
-Un test sin assertions puede pasar. Una selección con todos los casos skipped termina con 0 en v0.1. Ningún caso seleccionado termina con 5.
+Un test sin assertions puede pasar. Una selección con todos los casos skipped termina con 0 en v0.2. Ningún caso seleccionado termina con 5.
 
 ## Archivos generados
 

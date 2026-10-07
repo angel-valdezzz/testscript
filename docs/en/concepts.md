@@ -20,7 +20,7 @@ A flow packages reusable behavior. It can interact with Web/API, perform asserti
 
 ```tscr
 flow createUser(baseUrl: String, name: String) -> Map[String, Any] {
-    var response = api.post("${baseUrl}/users", body: {name: name})
+    var response = POST "${baseUrl}/users" { body json {name: name} }
     expect response.status == 201
     return response.json
 }
@@ -52,7 +52,7 @@ test "Session" using [session] { expect len(baseUrl) > 0 }
 
 ## record and data
 
-A record defines named, typed fields; instances are constructed with named arguments. Fields can be read through dot or bracket access. Field mutation and classes are outside v0.1.
+A record defines named, typed fields; instances are constructed with named arguments. Fields can be read through dot or bracket access. Field mutation and classes are outside v0.2.
 
 `data` declares module-level data, commonly loaded from CSV, JSON or YAML. A data-driven test creates one result per row. See [data and fixtures](data-fixtures.md).
 
@@ -65,3 +65,22 @@ An assertion records a passing/failing verification. A caught assertion still ma
 ## Naming
 
 Use `camelCase` for variables, data, functions, flows and fixtures; `PascalCase` for record/type names; `kebab-case.tscr` for files. Test/step titles are descriptive strings. Naming rules are linter warnings, not execution errors.
+
+## var / const and returns
+
+Both variables and constants use `camelCase`. `var` can be reassigned; `const` fixes the binding (it does not deeply freeze a List/Map). Both can receive a flow/function return. `List[T]` and `Map[K, V]` name collection types; values still use names such as `userList` and `userById`.
+
+```tscr
+fn greeting(name: String) -> String { return "Hello, ${name}" }
+flow verifiedName(name: String) -> String {
+    expect len(name) > 0
+    return greeting(name)
+}
+test "Returns" {
+    var userName = verifiedName("Angel")
+    const expectedName = greeting("Angel")
+    expect userName == expectedName
+}
+```
+
+`step` is optional grouping in the timeline, similar in purpose to Robot Framework GROUP. It has its own block scope; it is not callable. `flow` is reusable and can return a value.

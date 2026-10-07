@@ -32,7 +32,12 @@ Se lee `testscript.toml` de la carpeta de la terminal o el archivo indicado con 
 ```toml
 [testscript]
 provider = "playwright"
+browser = "chromium"
 headless = true
+incognito = true
+viewport_width = 1440
+viewport_height = 900
+maximize = false
 timeout = 10
 base_url = "http://127.0.0.1:8765"
 output = "testscript-results"
@@ -53,3 +58,5 @@ Claves desconocidas/valores inválidos generan errores. `--provider` y `--output
 | 5 | Sin archivos `.tscr` o sin tests seleccionados |
 
 Formatter, watch, workers paralelos y LSP/editor no están implementados.
+
+Las opciones de navegador y compatibilidad se explican en [automatización Web](web.md). Se aplican los overrides de CLI antes de validar. Cada resultado de fila hereda todas las etiquetas del test; no hay etiquetas por fila.

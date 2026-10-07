@@ -10,7 +10,7 @@ Use braces for blocks, `=` for assignment and no semicolons. Whitespace and newl
 const baseUrl: String = "http://127.0.0.1:8765"
 ```
 
-Strings use double quotes and JSON escapes. `${expression}` interpolates an expression; nested braces inside interpolation are outside v0.1. Regex literals use `r"pattern"` and Python-compatible regex syntax.
+Strings use double quotes and JSON escapes. `${expression}` interpolates an expression; nested braces inside interpolation are outside v0.2. Regex literals use `r"pattern"` and Python-compatible regex syntax.
 
 ## Variables and types
 
@@ -59,7 +59,7 @@ for each item in [1, 2, 3] { total = total + item }
 if total == 6 { expect true } else { expect false }
 ```
 
-`for each` supports lists, map keys and string characters. It creates a per-iteration binding. `while`, `break`, `continue` and `else if` shorthand are outside v0.1; use a nested `if` inside `else`.
+`for each` supports lists, map keys and string characters. It creates a per-iteration binding. `while`, `break`, `continue` and `else if` shorthand are outside v0.2; use a nested `if` inside `else`.
 
 ## Expressions
 
@@ -77,7 +77,7 @@ expect "TestScript" contains "Script"
 import { login } from "login-flow.tscr"
 ```
 
-Imports are explicit, named and relative to the importing file. Only `.tscr` modules are supported. Records, functions, flows, fixtures, constants and data may be imported. Circular imports and duplicate declarations are errors. Module-local dependencies remain available to imported functions/fixtures. Native Python imports, wildcard imports and aliases are outside v0.1.
+Imports are explicit, named and relative to the importing file. Only `.tscr` modules are supported. Records, functions, flows, fixtures, constants and data may be imported. Circular imports and duplicate declarations are errors. Module-local dependencies remain available to imported functions/fixtures. Native Python imports, wildcard imports and aliases are outside v0.2.
 
 ## Builtins
 

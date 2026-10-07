@@ -7,3 +7,26 @@ body{background:var(--ts-bg)}.md-grid{max-width:1280px}.md-header{background:#11
 @media(max-width:420px){.ts-product h1{font-size:46px;letter-spacing:-2.5px}.ts-product h2{font-size:37px}.ts-actions{gap:18px}.ts-concept-grid{grid-template-columns:1fr}.ts-concept-grid a{min-height:175px}.ts-editor pre code{font-size:10px;padding:22px 14px}.ts-editor-top{padding:13px 14px;gap:12px}.ts-editor-result small{font-size:8px}.ts-editor-result{gap:9px}.ts-passed{font-size:8px}.ts-domain-tabs span{display:none}.ts-button{font-size:13px;padding:12px 16px}}
 @media(prefers-reduced-motion:reduce){.ts-trace i{animation:none}.ts-button{transition:none}.ts-editor{transform:none}html{scroll-behavior:auto}}
 .ts-product{overflow-x:clip}.ts-hero>*{min-width:0}.ts-domain-panel{min-width:0}
+
+/* Theme tokens apply to docs and the current product shell. */
+[data-md-color-scheme="default"]{--ts-bg:#f7faf5;--ts-surface:#ffffff;--ts-fg:#17231b;--ts-dim:#506154;--ts-muted:#506154;--ts-line:#d8e1d5;--ts-lime:#397414;--md-default-bg-color:#f7faf5;--md-default-fg-color:#17231b;--md-default-fg-color--light:#506154;--md-primary-fg-color:#edf3e8;--md-primary-bg-color:#17231b;--md-typeset-a-color:#397414;--md-accent-fg-color:#397414;--md-code-bg-color:#eaf0e5;--md-code-fg-color:#263b2b}
+[data-md-color-scheme="default"] .md-header,[data-md-color-scheme="default"] .md-tabs{background:#edf3e8;color:#17231b}
+[data-md-color-scheme="default"] .md-typeset h1,[data-md-color-scheme="default"] .md-typeset h2,[data-md-color-scheme="default"] .md-typeset h3{color:#17231b}
+[data-md-color-scheme="default"] .md-footer{background:#edf3e8;color:#17231b}
+[data-md-color-scheme="default"] .ts-product{background:#f7faf5;color:#17231b}
+[data-md-color-scheme="default"] .ts-code,[data-md-color-scheme="default"] .ts-install,[data-md-color-scheme="default"] .ts-concept,[data-md-color-scheme="default"] .ts-timeline,[data-md-color-scheme="default"] .ts-demo{background:#ffffff;color:#17231b;border-color:#d8e1d5}
+[data-md-color-scheme="default"] .ts-product .ts-secondary,[data-md-color-scheme="default"] .ts-product h1,[data-md-color-scheme="default"] .ts-product h2,[data-md-color-scheme="default"] .ts-product strong{color:#17231b}
+@media(prefers-reduced-motion:reduce){.ts-product *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+[data-md-color-scheme="default"] .ts-product .ts-secondary{color:#17231b!important}
+[data-md-color-scheme="default"] .ts-install code{color:#263b2b}
+[data-md-color-scheme="default"] .ts-editor,[data-md-color-scheme="default"] .ts-domain-panel{background:#fff;border-color:#d8e1d5;box-shadow:0 32px 70px #42523a12}
+[data-md-color-scheme="default"] .ts-editor-top{background:#eaf0e5;color:#506154}
+[data-md-color-scheme="default"] .ts-editor pre code,[data-md-color-scheme="default"] .ts-domain-panel pre code{color:#263b2b}
+[data-md-color-scheme="default"] .ts-editor .kw,[data-md-color-scheme="default"] .ts-domain-panel .kw{color:#684599}
+[data-md-color-scheme="default"] .ts-editor .st,[data-md-color-scheme="default"] .ts-domain-panel .st{color:#397414}
+[data-md-color-scheme="default"] .ts-editor .ty,[data-md-color-scheme="default"] .ts-domain-panel .ty{color:#765219}
+[data-md-color-scheme="default"] .ts-editor .fn,[data-md-color-scheme="default"] .ts-domain-panel .fn{color:#21665e}
+[data-md-color-scheme="default"] .ts-concept-grid h3,[data-md-color-scheme="default"] .ts-footer>span:first-child{color:#17231b}
+[data-md-color-scheme="default"] .ts-button{background:#c5f584}
+[data-md-color-scheme="default"] .md-typeset a:hover{color:#24570b}

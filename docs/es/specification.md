@@ -1,4 +1,4 @@
-# Especificación TestScript v0.1
+# Especificación TestScript v0.2
 
 **Estado:** contrato experimental de implementación. La gramática ejecutable está en `src/testscript/grammar.lark`. Esta referencia describe lo soportado; las propuestas se mantienen en el roadmap.
 
@@ -43,7 +43,7 @@ Assertions fallidas marcan el caso incluso si se capturan. Errores operativos ca
 
 ## Web y HTTP
 
-Chrome/Chromium por Playwright/Selenium con CSS/XPath. Las acciones esperan según el adaptador; las assertions evalúan una vez. HTTP soporta cuerpos JSON, maps headers/query, redirects e inspección. Status no-2xx son respuestas; fallos de transporte son errores.
+Combinaciones proveedor/navegador de la guía Web con CSS/XPath. Las acciones esperan según el adaptador; las assertions evalúan una vez. HTTP soporta cuerpos JSON, maps headers/query, redirects e inspección. Status no-2xx son respuestas; fallos de transporte son errores.
 
 ## Selección y resultados
 
@@ -54,3 +54,5 @@ Tags solo en tests; inclusión/exclusión OR. Un resultado por test/fila. Estado
 Mobile, clases/interfaces/herencia, errores personalizados, task/page, callbacks, map/filter/reduce, paralelismo, async/await, formatter, LSP, imports comodín, scope suite de fixtures, retry automático de assertions, capturas automáticas e integraciones con librerías reporter no están implementados.
 
 Cada cambio de contrato debe actualizar gramática/intérprete, regresiones, ejemplos y ambos idiomas.
+
+La sintaxis HTTP es `METHOD url { headers map query map body json expression }`; cada sección opcional aparece una vez. Las comas de propiedades de mapas son opcionales; las de listas y argumentos siguen siendo obligatorias.

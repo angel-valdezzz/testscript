@@ -15,7 +15,7 @@ TestScript separa semántica del lenguaje y motores de automatización.
 
 ## Python + Lark
 
-Python aporta empaquetado y acceso a librerías maduras. Lark permite una gramática explícita. El intérprete ejecuta directamente un árbol con ubicaciones. No hay transpilación ni IR separado en v0.1; se evaluará un IR cuando exista una necesidad concreta.
+Python aporta empaquetado y acceso a librerías maduras. Lark permite una gramática explícita. El intérprete ejecuta directamente un árbol con ubicaciones. No hay transpilación ni IR separado en v0.2; se evaluará un IR cuando exista una necesidad concreta.
 
 ## Contrato de providers
 

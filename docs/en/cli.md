@@ -23,7 +23,7 @@ Paths may be files or directories. Discovery is recursive for `.tscr` files, wit
 
 ## Filters
 
-Repeated `--tag` flags select tests matching **any** included tag. Repeated `--exclude-tag` flags remove tests matching **any** excluded tag. `--name` uses case-sensitive substring matching. Tags are metadata on tests only; fixtures/flows do not inherit or propagate them. Boolean tag expressions are not supported in v0.1.
+Repeated `--tag` flags select tests matching **any** included tag. Repeated `--exclude-tag` flags remove tests matching **any** excluded tag. `--name` uses case-sensitive substring matching. Tags are metadata on tests only; fixtures/flows do not inherit or propagate them. Boolean tag expressions are not supported in v0.2.
 
 ## Configuration
 
@@ -32,7 +32,12 @@ The CLI reads `testscript.toml` in the process working directory, or the file su
 ```toml
 [testscript]
 provider = "playwright"
+browser = "chromium"
 headless = true
+incognito = true
+viewport_width = 1440
+viewport_height = 900
+maximize = false
 timeout = 10
 base_url = "http://127.0.0.1:8765"
 output = "testscript-results"
@@ -53,3 +58,5 @@ Unknown keys and invalid values are errors. `--provider` and `--output` override
 | 5 | No `.tscr` files or no tests selected |
 
 Formatter, watch mode, parallel workers and editor/LSP integration are not implemented yet.
+
+Browser flags and compatibility are documented in [Web automation](web.md). CLI overrides are applied before validation. Data-row results inherit all tags from their test; there are no per-row tags.

@@ -2,8 +2,6 @@
 
 import httpx
 
-from testscript.model import Builtin, Namespace
-
 
 class HttpAdapter:
     def __init__(self, timeout=10, base_url="", on_response=None):
@@ -11,6 +9,13 @@ class HttpAdapter:
         self.client = None
 
     def request(self, method, url, body=None, headers=None, query=None):
+        if headers is not None and (
+            not isinstance(headers, dict)
+            or not all(isinstance(k, str) and isinstance(v, str) for k, v in headers.items())
+        ):
+            raise TypeError("HTTP headers must be a Map of String keys and String values")
+        if query is not None and not isinstance(query, dict):
+            raise TypeError("HTTP query must be Map")
         if self.client is None:
             self.client = httpx.Client(timeout=self.timeout, follow_redirects=True, trust_env=False)
         response = self.client.request(
@@ -34,18 +39,6 @@ class HttpAdapter:
         if self.on_response:
             self.on_response(method, str(response.url), response.status_code)
         return result
-
-    def namespace(self):
-        members = {}
-        for method in ("get", "post", "put", "patch", "delete", "head", "options"):
-            members[method] = Builtin(
-                f"api.{method}",
-                lambda url, body=None, headers=None, query=None, m=method: self.request(
-                    m.upper(), url, body, headers, query
-                ),
-                pure=False,
-            )
-        return Namespace(members)
 
     def close(self):
         if self.client:

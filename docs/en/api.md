@@ -1,40 +1,61 @@
 # API testing
 
-`api` is a built-in HTTP namespace backed by HTTPX. It creates a client lazily and closes it after each test/data row.
+HTTP requests are expressions: an uppercase method, a URL and one declarative block. A request returns a response value. HTTPX creates a client lazily and closes it after each test/data row.
 
 ## Send a request
 
 ```tscr
-var response = api.post(
-    "http://127.0.0.1:8765/users",
-    body: {name: "Angel"},
-    headers: {"Content-Type": "application/json"}
-)
+var token = "local-example"
+var response = POST "http://127.0.0.1:8765/users" {
+    headers { "Authorization": "Bearer ${token}" }
+    query { notify: true }
+    body json {
+        name: "Angel"
+        role: "tester"
+    }
+}
 expect response.status == 201
 expect response.json.name == "Angel"
 ```
 
-Methods: `get`, `post`, `put`, `patch`, `delete`, `head`, `options`. Every method accepts `url`, optional JSON `body`, `headers` and `query`. Query parameters are supplied as a map. Responses are eager values, not streaming objects.
+Methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`. The block is required, even when empty. `headers`, `query` and `body json` are optional and can appear in any order, once each. Headers are a map of strings; query is a map; JSON accepts a serializable value. JSON bodies automatically receive `Content-Type: application/json` unless explicitly overridden. Property commas are optional in maps, including nested maps; list commas remain required.
+
+## Reuse loaded payloads
+
+```tscr
+flow submitUser(baseUrl: String) -> Map[String, Any] {
+    var payload = load("data/user.json")
+    return POST "${baseUrl}/users" { body json payload }
+}
+test "Create user" {
+    const response = submitUser("http://127.0.0.1:8765")
+    expect response.status == 201
+}
+```
+
+`load()` selects JSON, YAML or CSV from the filename extension. Paths resolve relative to the declaring module. Requests may run in tests, flows and fixtures; they are forbidden inside `fn` and module initializers. `check` and `list` never send a request.
+
+## Response fields
 
 | Field | Value |
 |---|---|
 | `status` | Integer HTTP status |
-| `json` | Decoded JSON, or null for non-JSON bodies |
+| `json` | Decoded JSON, or null for non-JSON/empty bodies |
 | `text` | Response text |
 | `headers` | Map with normalized lowercase header names |
 | `url` | Final URL after redirects |
 
-Redirects are followed. TLS verification remains enabled. Proxy environment variables are not implicitly used by this MVP. Cookies are retained within a test and cleared through client teardown between tests.
+Responses are eager values. Redirects are followed; TLS verification stays enabled. Proxy environment variables are not implicitly used. Cookies last within a test and are cleared between tests.
 
 ## Negative HTTP responses
 
 ```tscr
-var response = api.get("http://127.0.0.1:8765/users/missing")
+var response = GET "http://127.0.0.1:8765/users/missing" {}
 expect response.status == 404
 expect response.json.error == "User not found"
 ```
 
-HTTP 4xx/5xx are normal response values. Transport errors (connection, timeout, TLS) throw catchable execution errors. An assertion determines whether an inspected response meets the test's expectation.
+HTTP 4xx/5xx are response values. Connection, timeout and TLS failures throw catchable execution errors. Assertions determine whether a response meets the test's expectation.
 
 ## Base URL and timeouts
 
@@ -44,8 +65,9 @@ base_url = "http://127.0.0.1:8765"
 timeout = 10
 ```
 
-With a base URL, `api.get("/users/missing")` concatenates the configured base and path. Full URLs are used directly. `timeout` is passed to HTTPX's timeout configuration; it is not a whole-test deadline.
+`GET "/users/missing" {}` joins the configured base URL and path. Full URLs are used directly. Timeout is HTTPX's request timeout, not a whole-test deadline.
 
-Run the local server and `tscr run examples/api.tscr`. The example creates and retrieves a user and checks a missing user. The demo stores data in memory and is only for local verification.
+Start `python examples/demo_server.py`, then run `tscr run examples/api.tscr`. OAuth helpers, multipart uploads, retries, JSON Schema/OpenAPI assertions and streaming are future work. Use `env("TOKEN")` in tests/flows for credentials.
 
-OAuth helpers, multipart uploads, retries, JSON Schema/OpenAPI assertions and direct integrations with other reporters are roadmap items. Never put secrets into committed example files; `env("TOKEN")` is available in tests/flows.
+!!! warning "Migration from 0.1"
+    `api.get(...)` and `api.post(...)` were removed in 0.2. Replace them with `GET url {}` and `POST url { body json payload }`. The response fields remain the same. See the [changelog](changelog.md).

@@ -1,4 +1,4 @@
-# TestScript v0.1 specification
+# TestScript v0.2 specification
 
 **Status:** experimental implementation contract. The executable grammar is `src/testscript/grammar.lark`. This document describes the supported behavior; proposals belong in the roadmap.
 
@@ -43,7 +43,7 @@ Failed assertions taint the case immediately, even if caught. Caught operational
 
 ## Web and HTTP
 
-Web supports Chromium/Chrome through Playwright/Selenium with CSS/XPath locators. Actions wait through adapter-specific behavior; assertions are single evaluations. HTTP supports JSON requests, headers/query maps, redirects and response inspection. Non-2xx statuses are response values. Transport failures are execution errors.
+Web supports Chromium/Chrome/Edge/Firefox/WebKit through the provider/browser combinations described in the Web guide with CSS/XPath locators. Actions wait through adapter-specific behavior; assertions are single evaluations. HTTP supports JSON requests, headers/query maps, redirects and response inspection. Non-2xx statuses are response values. Transport failures are execution errors.
 
 ## Discovery, metadata and reporting
 
@@ -51,6 +51,8 @@ Tags apply to test declarations only, with OR include/exclude semantics. One res
 
 ## Explicit exclusions
 
-Mobile, classes/interfaces/inheritance, custom exceptions, task/page blocks, callbacks, map/filter/reduce, parallel execution, async/await, formatter, LSP, wildcard imports, fixture suite scopes, automatic assertion retries, automatic screenshots and reporter-library integrations are not implemented in 0.1.
+Mobile, classes/interfaces/inheritance, custom exceptions, task/page blocks, callbacks, map/filter/reduce, parallel execution, async/await, formatter, LSP, wildcard imports, fixture suite scopes, automatic assertion retries, automatic screenshots and reporter-library integrations are not implemented in 0.2.
 
 Changes to this contract require updating the grammar/interpreter, regression tests, examples and both documentation languages together.
+
+HTTP syntax is `METHOD url { headers map query map body json expression }`; each optional section is unique. Map property commas are optional, while list and argument commas remain required.

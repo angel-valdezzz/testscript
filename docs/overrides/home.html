@@ -6,11 +6,11 @@
   <div class="ts-trace" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="ts-intro">
     <p class="ts-eyebrow"><span class="ts-dot"></span>{{ 'UN LENGUAJE PARA TESTING' if es else 'A LANGUAGE FOR TESTING' }}</p>
-    <h1>{{ 'Pruebas que expresan' if es else 'Tests that read' }}<br>{{ 'tu' if es else 'like' }} <em>{{ 'intención.' if es else 'intent.' }}</em></h1>
-    <p class="ts-lead">{{ 'Web y API. Flows reutilizables. Cada paso visible. Escribe pruebas claras con un lenguaje diseñado para automatización.' if es else 'Web and API. Reusable flows. Every step visible. Write clear tests in a language designed for automation.' }}</p>
+    <h1>{{ 'Pruebas de Web y API' if es else 'Web and API tests' }}<br>{{ 'con' if es else 'with' }} <em>{{ 'tipos.' if es else 'types.' }}</em></h1>
+    <p class="ts-lead">{{ 'Flows reutilizables, datos tipados, HTTP declarativo y resultados HTML, JSON y JUnit.' if es else 'Web and API. Reusable flows. Typed data, declarative HTTP and HTML, JSON and JUnit results.' }}</p>
     <div class="ts-actions"><a class="ts-button" href="{{ 'getting-started/' | url }}">{{ 'Empieza a construir' if es else 'Start building' }} <span aria-hidden="true">↗</span></a><a class="ts-secondary" href="{{ 'language/' | url }}">{{ 'Explora el lenguaje' if es else 'Explore the language' }} <span aria-hidden="true">→</span></a></div>
     <div class="ts-install"><code>python -m pip install .</code><button aria-label="{{ 'Copiar comando' if es else 'Copy command' }}" data-copy="python -m pip install .">⧉</button><small>{{ 'Desde el código fuente · Python 3.12+' if es else 'From source · Python 3.12+' }}</small></div>
-    <p class="ts-release">v0.1.0 <span>EXPERIMENTAL</span> {{ '.tscr · CLI tscr · Código abierto' if es else '.tscr · tscr CLI · Open source' }}</p>
+    <p class="ts-release">v0.2.0 <span>EXPERIMENTAL</span> {{ '.tscr · CLI tscr · Código abierto' if es else '.tscr · tscr CLI · Open source' }}</p>
   </div>
   <div class="ts-editor">
     <div class="ts-editor-top"><span class="ts-window-dots" aria-hidden="true">● ● ●</span><span>hello.tscr</span><span class="ts-native">TESTSCRIPT</span></div>
@@ -49,7 +49,7 @@
     <span class="kw">click</span> <span class="fn">css</span>(<span class="st">"button[type=submit]"</span>)
 }</code></pre><p>{{ 'Cambia el motor en la configuración. Conserva tus flows.' if es else 'Switch the engine in configuration. Keep your flows.' }} <a href="{{ 'web/' | url }}">{{ 'Guía Web →' if es else 'Web guide →' }}</a></p></div>
     <div id="demo-api" role="tabpanel" aria-labelledby="tab-api" hidden><pre><code><span class="kw">test</span> <span class="st">"A missing user"</span> <span class="kw">tags</span> [<span class="st">"api"</span>] {
-    <span class="kw">var</span> response = api.<span class="fn">get</span>(<span class="st">"http://127.0.0.1:8765/users/missing"</span>)
+    <span class="kw">var</span> response = <span class="kw">GET</span> <span class="st">"http://127.0.0.1:8765/users/missing"</span> {}
     <span class="kw">expect</span> response.status == <span class="nu">404</span>
     <span class="kw">expect</span> response.json.error == <span class="st">"User not found"</span>
 }</code></pre><p>{{ 'Los 4xx y 5xx son respuestas que puedes verificar.' if es else '4xx and 5xx are responses you can verify.' }} <a href="{{ 'api/' | url }}">{{ 'Guía API →' if es else 'API guide →' }}</a></p></div>
@@ -59,7 +59,7 @@
   <div><p class="ts-eyebrow">03 / {{ 'CADA PASO VISIBLE' if es else 'EVERY STEP VISIBLE' }}</p><h2>{{ 'Una ejecución.' if es else 'One execution.' }}<br><em>{{ 'Toda la historia.' if es else 'The whole story.' }}</em></h2><p>{{ 'Flows, assertions, fixtures y evidencias en una línea de ejecución. Resultados en HTML, JSON y JUnit para revisión y CI.' if es else 'Flows, assertions, fixtures and evidence in one execution timeline. HTML, JSON and JUnit results for review and CI.' }}</p><a class="ts-secondary" href="{{ 'results/' | url }}">{{ 'Entiende los resultados' if es else 'Understand the results' }} →</a></div>
   <ol class="ts-timeline"><li><small>FIXTURE</small><b>session / setup</b><span>✓</span></li><li><small>FLOW</small><b>verifyName</b><span>✓</span></li><li><small>STEP</small><b>Validate the name</b><span>✓</span></li><li><small>EXPECT</small><b>len(name) &gt; 0</b><span>✓</span></li><li><small>FIXTURE</small><b>session / teardown</b><span>✓</span></li></ol>
 </section>
-<section class="ts-section ts-status"><div><p class="ts-eyebrow">{{ 'CONSTRUIDO EN ABIERTO' if es else 'BUILT IN THE OPEN' }}</p><h2>{{ 'Pequeño hoy.' if es else 'Small today.' }}<br><em>{{ 'Preparado para crecer.' if es else 'Ready to grow.' }}</em></h2></div><div><p>{{ 'TestScript 0.1.0 es experimental. Web y API forman el primer alcance. Mobile, paralelismo y herramientas de editor están en el roadmap, no en esta versión.' if es else 'TestScript 0.1.0 is experimental. Web and API are the first scope. Mobile, parallel execution and editor tooling are on the roadmap, not in this release.' }}</p><div class="ts-actions"><a class="ts-button" href="{{ 'getting-started/' | url }}">{{ 'Escribe tu primera prueba' if es else 'Write your first test' }} ↗</a><a class="ts-secondary" href="{{ 'roadmap/' | url }}">Roadmap →</a></div></div></section>
+<section class="ts-section ts-status"><div><p class="ts-eyebrow">{{ 'CONSTRUIDO EN ABIERTO' if es else 'BUILT IN THE OPEN' }}</p><h2>{{ 'Pequeño hoy.' if es else 'Small today.' }}<br><em>{{ 'Preparado para crecer.' if es else 'Ready to grow.' }}</em></h2></div><div><p>{{ 'TestScript 0.2.0 es experimental. Web y API forman el primer alcance. Mobile, paralelismo y herramientas de editor están en el roadmap, no en esta versión.' if es else 'TestScript 0.2.0 is experimental. Web and API are the first scope. Mobile, parallel execution and editor tooling are on the roadmap, not in this release.' }}</p><div class="ts-actions"><a class="ts-button" href="{{ 'getting-started/' | url }}">{{ 'Escribe tu primera prueba' if es else 'Write your first test' }} ↗</a><a class="ts-secondary" href="{{ 'roadmap/' | url }}">Roadmap →</a></div></div></section>
 <footer class="ts-footer"><span>{ } TestScript</span><span>{{ 'Creado por' if es else 'Created by' }} Angel Gerardo Molina Valdez</span><a href="https://github.com/angel-valdezzz/testscript" target="_blank" rel="noopener">GitHub ↗</a></footer>
 </div>
 {% endblock %}

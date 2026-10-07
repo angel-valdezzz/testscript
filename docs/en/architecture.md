@@ -15,7 +15,7 @@ TestScript separates language semantics from automation engines.
 
 ## Why Python + Lark?
 
-Python provides packaging and access to mature automation libraries. Lark lets the language grammar be explicit instead of extracting statements with ad-hoc string matching. The interpreter executes a location-aware syntax tree directly. There is no transpilation or separate IR in v0.1; an intermediate representation can be introduced when there is a concrete optimization need.
+Python provides packaging and access to mature automation libraries. Lark lets the language grammar be explicit instead of extracting statements with ad-hoc string matching. The interpreter executes a location-aware syntax tree directly. There is no transpilation or separate IR in v0.2; an intermediate representation can be introduced when there is a concrete optimization need.
 
 ## Provider boundary
 

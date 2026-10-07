@@ -27,10 +27,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        provider: [playwright, selenium]
+        include:
+          - {provider: playwright, browser: chromium}
+          - {provider: playwright, browser: firefox}
+          - {provider: playwright, browser: webkit}
+          - {provider: playwright, browser: chrome}
+          - {provider: playwright, browser: edge}
+          - {provider: selenium, browser: chrome}
+          - {provider: selenium, browser: firefox}
+          - {provider: selenium, browser: edge}
     env:
       TSCR_RUN_BROWSER_TESTS: '1'
       TSCR_TEST_PROVIDER: ${{ matrix.provider }}
+      TSCR_TEST_BROWSER: ${{ matrix.browser }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,12 +47,12 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e ".[dev,playwright,selenium]"
       - if: matrix.provider == 'playwright'
-        run: python -m playwright install chromium --with-deps
+        run: python -m playwright install ${{ matrix.browser }} --with-deps
       - run: python -m pytest tests/test_browser.py -q
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: browser-${{ matrix.provider }}
+          name: browser-${{ matrix.provider }}-${{ matrix.browser }}
           path: testscript-results/
           if-no-files-found: ignore
   docs-and-package:

@@ -5,7 +5,7 @@
 ```tscr
 test "Handle an operational error" {
     try {
-        var response = api.get("http://127.0.0.1:1")
+        var response = GET "http://127.0.0.1:1" {}
     } catch error {
         log error.message
     } finally {
@@ -14,7 +14,7 @@ test "Handle an operational error" {
 }
 ```
 
-`try` requires `catch`, `finally` or both. `catch error` exposes `message`, `path`, `line` and `column`. `throw error` rethrows that existing error. Creating custom error types or throwing arbitrary strings is outside v0.1.
+`try` requires `catch`, `finally` or both. `catch error` exposes `message`, `path`, `line` and `column`. `throw error` rethrows that existing error. Creating custom error types or throwing arbitrary strings is outside v0.2.
 
 A caught operational error can be handled and allow the test to pass. An assertion failure is recorded immediately and remains a failure even when caught. Cleanup runs through `finally`, fixture teardown and automatic adapter shutdown.
 
@@ -26,7 +26,7 @@ A caught operational error can be handled and allow the test to pass. An asserti
 | `failed` | Failed assertion, unhandled execution error or cleanup error |
 | `skipped` | `skip "reason"` ended the case without an earlier failure |
 
-A test with no assertions can pass; the runner does not invent validations. All-skipped selections exit with 0 in v0.1. No selected tests exits with 5.
+A test with no assertions can pass; the runner does not invent validations. All-skipped selections exit with 0 in v0.2. No selected tests exits with 5.
 
 ## Output files
 

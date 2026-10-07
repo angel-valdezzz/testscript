@@ -15,6 +15,7 @@ import yaml
 from lark import Tree
 
 from testscript.adapters.http import HttpAdapter
+from testscript.configuration import validate_config
 from testscript.model import (
     Builtin,
     Env,
@@ -46,7 +47,7 @@ class Result:
 
 class Runtime:
     def __init__(self, config=None, output=Path("testscript-results"), browser_factory=None):
-        self.config = config or {}
+        self.config = validate_config(dict(config or {}))
         self.output = Path(output)
         self.browser_factory = browser_factory
         self.browser = None
@@ -90,7 +91,6 @@ class Runtime:
             self.root.define(name, Builtin(name, callback), constant=True)
         for name, callback in effects.items():
             self.root.define(name, Builtin(name, callback, pure=False), constant=True)
-        self.root.define("api", self.http.namespace(), constant=True)
 
     def event(self, kind, message, **extra):
         if self.current:
@@ -137,7 +137,14 @@ class Runtime:
                 factory = {"playwright": PlaywrightAdapter, "selenium": SeleniumAdapter}.get(provider)
                 if not factory:
                     raise ValueError(f"Unknown browser provider '{provider}'")
-                self.browser = factory(self.config.get("timeout", 10), self.config.get("headless", True))
+                self.browser = factory(
+                    self.config.get("timeout", 10), self.config.get("headless", True),
+                    browser=self.config.get("browser"),
+                    incognito=self.config.get("incognito", True),
+                    viewport_width=self.config.get("viewport_width", 1440),
+                    viewport_height=self.config.get("viewport_height", 900),
+                    maximize=self.config.get("maximize", False),
+                )
         return self.browser
 
     def load_module(self, path):
@@ -273,6 +280,19 @@ class Runtime:
             return re.compile(str(children[0])[2:-1])
         if kind == "variable":
             return env.get(str(children[0]))
+        if kind == "http_request":
+            if self.pure_depth or self.initializing:
+                raise TypeError("HTTP requests are only allowed in tests, flows and fixtures")
+            url = self.evaluate(children[1], env)
+            if not isinstance(url, str):
+                raise TypeError("HTTP URL must be String")
+            options = {}
+            for option in children[2:]:
+                key = str(option.data).removeprefix("http_")
+                if key in options:
+                    raise TypeError(f"Duplicate HTTP option '{key}'")
+                options[key] = self.evaluate(option.children[0], env)
+            return self.http.request(str(children[0]), url, **options)
         if kind == "list_expr":
             return [self.evaluate(c, env) for c in children]
         if kind == "map_expr":

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from testscript import __version__
 from testscript.analysis import Analyzer
+from testscript.configuration import BROWSERS, validate_config
 from testscript.parser import ScriptError
 from testscript.reporting import write_reports
 from testscript.runtime import Runtime
@@ -41,21 +42,6 @@ def read_config(path):
     config = data.get("testscript", {})
     if not isinstance(config, dict):
         raise ValueError("[testscript] must be a table")
-    allowed = {"provider", "headless", "timeout", "base_url", "output", "tests_use_flows_only"}
-    unknown = set(config) - allowed
-    if unknown:
-        raise ValueError(f"Unknown configuration: {', '.join(sorted(unknown))}")
-    if config.get("provider", "playwright") not in {"playwright", "selenium"}:
-        raise ValueError("provider must be playwright or selenium")
-    timeout = config.get("timeout", 10)
-    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or timeout <= 0:
-        raise ValueError("timeout must be a positive number of seconds")
-    for key in ("headless", "tests_use_flows_only"):
-        if key in config and not isinstance(config[key], bool):
-            raise ValueError(f"{key} must be Bool")
-    for key in ("base_url", "output"):
-        if key in config and not isinstance(config[key], str):
-            raise ValueError(f"{key} must be String")
     return config
 
 
@@ -73,6 +59,14 @@ def build_parser():
             child.add_argument("--name")
         if command == "run":
             child.add_argument("--provider", choices=["playwright", "selenium"])
+            child.add_argument("--browser", choices=sorted(set.union(*BROWSERS.values())))
+            visibility = child.add_mutually_exclusive_group()
+            visibility.add_argument("--headed", dest="headless", action="store_false", default=None)
+            visibility.add_argument("--headless", dest="headless", action="store_true")
+            child.add_argument("--incognito", action=argparse.BooleanOptionalAction, default=None)
+            child.add_argument("--viewport-width", type=int)
+            child.add_argument("--viewport-height", type=int)
+            child.add_argument("--maximize", action=argparse.BooleanOptionalAction, default=None)
             child.add_argument("--output", type=Path)
         if command == "lint":
             child.add_argument("--flows-only", action="store_true")
@@ -86,6 +80,11 @@ def main(argv=None):
         config = read_config(args.config)
         if getattr(args, "provider", None):
             config["provider"] = args.provider
+        for key in ("browser", "headless", "incognito", "viewport_width", "viewport_height", "maximize"):
+            value = getattr(args, key, None)
+            if value is not None:
+                config[key] = value
+        validate_config(config)
         output = getattr(args, "output", None) or Path(config.get("output", "testscript-results"))
         runtime = Runtime(config, output)
         paths = discover(args.paths)

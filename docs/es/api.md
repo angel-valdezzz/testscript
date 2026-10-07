@@ -1,42 +1,63 @@
 # Pruebas de API
 
-`api` es un namespace HTTP basado en HTTPX. Su cliente se crea cuando hace falta y se cierra después de cada test/fila.
+Las peticiones HTTP son expresiones: método en mayúsculas, URL y un bloque declarativo. Devuelven una respuesta como valor. HTTPX crea el cliente al necesitarlo y lo cierra después de cada test/fila.
 
-## Envía un request
+## Enviar una petición
 
 ```tscr
-var response = api.post(
-    "http://127.0.0.1:8765/users",
-    body: {name: "Angel"},
-    headers: {"Content-Type": "application/json"}
-)
+var token = "ejemplo-local"
+var response = POST "http://127.0.0.1:8765/users" {
+    headers { "Authorization": "Bearer ${token}" }
+    query { notify: true }
+    body json {
+        name: "Angel"
+        role: "tester"
+    }
+}
 expect response.status == 201
 expect response.json.name == "Angel"
 ```
 
-Métodos: `get`, `post`, `put`, `patch`, `delete`, `head`, `options`. Aceptan `url` y opcionalmente `body` JSON, `headers` y `query`. Los parámetros query se proporcionan como map. La respuesta se carga completa; no es un stream.
+Métodos: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`. El bloque es obligatorio, aunque esté vacío. `headers`, `query` y `body json` son opcionales, pueden ir en cualquier orden y aparecer una vez cada uno. Headers es un mapa de strings; query es un mapa; JSON acepta un valor serializable. El cuerpo JSON añade `Content-Type: application/json` salvo que lo reemplaces. Las comas entre propiedades son opcionales en mapas, también anidados; en listas siguen siendo obligatorias.
+
+## Reutilizar un payload cargado
+
+```tscr
+flow submitUser(baseUrl: String) -> Map[String, Any] {
+    var payload = load("data/user.json")
+    return POST "${baseUrl}/users" { body json payload }
+}
+test "Crear usuario" {
+    const response = submitUser("http://127.0.0.1:8765")
+    expect response.status == 201
+}
+```
+
+`load()` elige JSON, YAML o CSV por la extensión. Las rutas se resuelven desde el módulo que declara la carga. Puedes enviar peticiones en tests, flows y fixtures; están prohibidas dentro de `fn` e inicializadores del módulo. `check` y `list` nunca envían peticiones.
+
+## Campos de la respuesta
 
 | Campo | Valor |
 |---|---|
 | `status` | Código HTTP entero |
-| `json` | JSON decodificado, o null si el contenido no es JSON |
-| `text` | Texto de respuesta |
-| `headers` | Map con nombres de encabezados en minúsculas |
-| `url` | URL final tras redirects |
+| `json` | JSON decodificado, o null si el cuerpo está vacío/no es JSON |
+| `text` | Texto de la respuesta |
+| `headers` | Mapa con nombres de headers en minúsculas |
+| `url` | URL final después de redirects |
 
-Se siguen redirects y se mantiene verificación TLS. Las variables de proxy del entorno no se aplican implícitamente. Las cookies se conservan durante el test y se descartan al cerrar el cliente.
+Las respuestas se cargan completas. Se siguen redirects y se verifica TLS. No se usan implícitamente proxies del entorno. Las cookies duran dentro del test y se eliminan entre tests.
 
 ## Respuestas negativas
 
 ```tscr
-var response = api.get("http://127.0.0.1:8765/users/missing")
+var response = GET "http://127.0.0.1:8765/users/missing" {}
 expect response.status == 404
 expect response.json.error == "User not found"
 ```
 
-Los códigos HTTP 4xx/5xx son valores inspeccionables. Conexión, timeout o TLS producen errores capturables. Las assertions determinan si la respuesta cumple lo esperado.
+HTTP 4xx/5xx son valores de respuesta. Fallos de conexión, timeout y TLS lanzan errores capturables. Los asserts determinan si la respuesta cumple lo esperado.
 
-## URL base y timeouts
+## URL base y timeout
 
 ```toml
 [testscript]
@@ -44,8 +65,9 @@ base_url = "http://127.0.0.1:8765"
 timeout = 10
 ```
 
-`api.get("/users/missing")` concatena URL base y path. Una URL completa se utiliza directamente. El timeout se pasa a HTTPX; no es un límite para el tiempo total del test.
+`GET "/users/missing" {}` une la URL base y el path. Una URL completa se utiliza directamente. El timeout se aplica a HTTPX, no al tiempo total del test.
 
-Inicia el servidor local y ejecuta `tscr run examples/api.tscr`. Se crea/consulta un usuario y se valida un 404. El laboratorio guarda datos en memoria y sirve para verificación local.
+Inicia `python examples/demo_server.py` y ejecuta `tscr run examples/api.tscr`. OAuth, multipart, retries, validación JSON Schema/OpenAPI y streaming quedan para futuras versiones. Usa `env("TOKEN")` en tests/flows para las credenciales.
 
-Helpers OAuth, multipart, retries, validaciones JSON Schema/OpenAPI e integraciones con otros reporters permanecen en el roadmap. Usa `env("TOKEN")` en tests/flows para leer secretos del entorno y evita guardarlos en ejemplos versionados.
+!!! warning "Migración desde 0.1"
+    `api.get(...)` y `api.post(...)` se retiraron en 0.2. Sustitúyelos por `GET url {}` y `POST url { body json payload }`. Los campos de respuesta se conservan. Consulta el [changelog](changelog.md).

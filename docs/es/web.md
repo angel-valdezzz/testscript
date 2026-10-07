@@ -1,6 +1,6 @@
 # Automatización Web
 
-Dos adaptadores opcionales: Playwright y Selenium. Ambos utilizan Chrome/Chromium con el mismo contrato de acciones/locators. La sintaxis `.tscr` se conserva al cambiar motor; el comportamiento interno puede diferir.
+Dos adaptadores opcionales: Playwright y Selenium. Ambos exponen el mismo contrato de acciones/locators. La sintaxis `.tscr` se conserva al cambiar motor; el comportamiento interno puede diferir.
 
 ## Locators y acciones
 
@@ -35,24 +35,54 @@ expect value(css("#username")) == "Angel"
 
 Playwright aplica sus verificaciones nativas de actionability. Selenium usa esperas explícitas de visibilidad/clickability. `visible()` espera visibilidad. El `timeout` se configura en segundos.
 
-!!! note "Assertions en v0.1"
+!!! note "Assertions en v0.2"
     `expect` evalúa una vez. No repite la expresión hasta que sea verdadera. Las esperas de elementos/acciones son independientes del retry de assertions; este último permanece en el roadmap.
 
-## Configuración
+## Proveedor, navegador y ventana
+
+El proveedor elige el motor de automatización; browser elige su navegador. La sintaxis de los scripts se conserva.
+
+| Proveedor | Valores de browser | Por defecto |
+|---|---|---|
+| Playwright | `chromium`, `chrome`, `edge`, `firefox`, `webkit` | `chromium` |
+| Selenium | `chrome`, `edge`, `firefox` | `chrome` |
+
+Firefox/WebKit de Playwright son sus builds administrados. WebKit no es la aplicación Safari. Chrome/Edge utilizan canales estables instalados. Selenium usa el navegador instalado y un driver compatible mediante Selenium Manager.
 
 ```toml
 [testscript]
 provider = "playwright"
+browser = "firefox"
 headless = true
+incognito = true
+viewport_width = 1440
+viewport_height = 900
 timeout = 10
 ```
 
 ```bash
-tscr run examples/web.tscr --provider selenium
+python -m playwright install firefox
+tscr run examples/web.tscr --provider playwright --browser firefox
+tscr run examples/web.tscr --provider selenium --browser chrome --headed --no-incognito
+tscr run examples/web.tscr --viewport-width 1024 --viewport-height 768
 ```
 
-`--provider` sobreescribe configuración. `TSCR_BROWSER_EXECUTABLE` puede indicar un ejecutable de Chrome/Chromium en entornos controlados. Instala primero las dependencias Web; consulta [instalación](getting-started.md).
+`incognito = true` crea un contexto/perfil privado. `false` crea un perfil normal **temporal** por test. Ninguno reutiliza tu perfil personal ni conserva cookies entre tests. Playwright usa un contexto persistente temporal para el modo normal. Width/height indican el viewport de la página, no el marco de la ventana. Selenium compensa el tamaño del marco; el gestor de ventanas puede limitar el tamaño alcanzable.
 
-Inicia `python examples/demo_server.py` y ejecuta `examples/web.tscr`. El navegador se cierra después de los fixtures, también en fallos. Las capturas son explícitas; capturas automáticas al fallar son trabajo futuro.
+Para maximizar una ventana visible:
 
-`TSCR_DRIVER_EXECUTABLE` permite indicar un ChromeDriver existente para Selenium. El driver debe ser compatible con tu versión de Chrome/Chromium.
+```toml
+[testscript]
+provider = "selenium"
+browser = "chrome"
+headless = false
+maximize = true
+```
+
+Maximizar es incompatible con dimensiones explícitas y con headless. En Playwright solo se admite Chromium/Chrome/Edge, con el comportamiento nativo de inicio; la resolución y el gestor de ventanas determinan el tamaño final.
+
+La CLI reemplaza TOML. Disponibles: `--headless`/`--headed`, `--incognito`/`--no-incognito`, `--maximize`/`--no-maximize`. Instala primero el navegador elegido; consulta [instalación](getting-started.md).
+
+`TSCR_BROWSER_EXECUTABLE` y `TSCR_DRIVER_EXECUTABLE` permiten indicar un navegador y driver Selenium compatibles para entornos controlados. Sin ejecutable propio, Playwright utiliza su motor administrado.
+
+Inicia `python examples/demo_server.py` y ejecuta `examples/web.tscr`. Los recursos se cierran después del teardown, también si falla el test. Las capturas son explícitas; capturas automáticas al fallar quedan para futuras versiones.
