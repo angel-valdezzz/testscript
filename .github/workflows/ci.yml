@@ -26,6 +26,7 @@ jobs:
   browsers:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - {provider: playwright, browser: chromium}
@@ -46,7 +47,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e ".[dev,playwright,selenium]"
-      - if: matrix.provider == 'playwright'
+      - if: matrix.browser == 'edge'
+        run: python -m playwright install msedge --with-deps
+      - if: matrix.provider == 'playwright' && matrix.browser != 'edge'
         run: python -m playwright install ${{ matrix.browser }} --with-deps
       - run: python -m pytest tests/test_browser.py -q
       - if: always()

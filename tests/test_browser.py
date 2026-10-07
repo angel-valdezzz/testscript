@@ -76,6 +76,9 @@ test "Browser workflow" {{
         runtime.load_module(script)
         assert not Analyzer(runtime).analyze()
         results = runtime.run()
+        for result in results:
+            for error in result.errors:
+                print(error)
         assert all(r.status == "passed" for r in results), [r.errors for r in results]
         assert dimensions == [[1024, 768], [1024, 768]]
         assert cookies == ["", ""]

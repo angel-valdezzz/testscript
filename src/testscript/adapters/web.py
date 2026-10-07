@@ -118,7 +118,10 @@ class SeleniumAdapter:
         if headless:
             options.add_argument("-headless" if browser == "firefox" else "--headless=new")
         if incognito:
-            options.add_argument({"chrome": "--incognito", "edge": "--inprivate", "firefox": "-private"}[browser])
+            if browser == "firefox":
+                options.set_preference("browser.privatebrowsing.autostart", True)
+            else:
+                options.add_argument("--incognito" if browser == "chrome" else "--inprivate")
         if os.getenv("TSCR_BROWSER_NO_SANDBOX") == "1" and browser != "firefox":
             options.add_argument("--no-sandbox")
         if os.getenv("TSCR_BROWSER_EXECUTABLE"):
@@ -136,6 +139,7 @@ class SeleniumAdapter:
         self.driver = driver_class(options=options, service=service)
         try:
             self.driver.set_page_load_timeout(timeout)
+            self.driver.get("about:blank")
             if maximize:
                 self.driver.maximize_window()
             else:
