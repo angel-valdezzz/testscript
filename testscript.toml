@@ -1,0 +1,6 @@
+[testscript]
+provider = "playwright"
+headless = true
+timeout = 10
+output = "testscript-results"
+tests_use_flows_only = false

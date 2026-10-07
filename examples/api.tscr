@@ -1,0 +1,24 @@
+// Start the deterministic demo: python examples/demo_server.py
+const baseUrl: String = "http://127.0.0.1:8765"
+
+flow createUser(name: String) -> Map[String, Any] {
+    var response = api.post("${baseUrl}/users", body: {name: name})
+    expect response.status == 201
+    return response.json
+}
+
+test "Create and retrieve a user" tags ["api", "smoke"] {
+    step "Create user" {
+        var user = createUser("Angel")
+        expect user.name == "Angel"
+        var response = api.get("${baseUrl}/users/${user.id}")
+        expect response.status == 200
+        expect response.json.name == "Angel"
+    }
+}
+
+test "A missing user is a valid HTTP response" tags ["api", "negative"] {
+    var response = api.get("${baseUrl}/users/missing")
+    expect response.status == 404
+    expect response.json.error == "User not found"
+}

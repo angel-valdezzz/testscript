@@ -1,0 +1,20 @@
+// Start the deterministic demo: python examples/demo_server.py
+import { login } from "login-flow.tscr"
+
+fixture session {
+    setup {
+        var baseUrl: String = "http://127.0.0.1:8765"
+    }
+    teardown {
+        log "Browser is closed automatically after fixture cleanup"
+    }
+}
+
+test "Login through a reusable flow" tags ["web", "smoke"] using [session] {
+    login(baseUrl, "Angel")
+    step "Verify login" {
+        expect visible(css("#welcome"))
+        expect text(css("#welcome")) == "Welcome, Angel"
+        screenshot "login.png"
+    }
+}

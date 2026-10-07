@@ -1,0 +1,26 @@
+INHERIT: mkdocs.yml
+site_description: Un lenguaje tipado para pruebas Web y API fáciles de leer.
+site_url: https://angel-valdezzz.github.io/testscript/es/
+docs_dir: docs/es
+site_dir: site/es
+theme:
+  language: es
+nav:
+  - Inicio: index.md
+  - Primeros pasos:
+      - Instalación: getting-started.md
+      - Tu primera prueba: first-test.md
+      - Ejemplos completos: examples.md
+  - Aprende:
+      - Conceptos: concepts.md
+      - Guía del lenguaje: language.md
+      - Datos y fixtures: data-fixtures.md
+      - Automatización Web: web.md
+      - Pruebas de API: api.md
+      - Errores y resultados: results.md
+  - Referencia:
+      - CLI y configuración: cli.md
+      - Especificación del lenguaje: specification.md
+      - Arquitectura: architecture.md
+      - Roadmap: roadmap.md
+      - Historial de cambios: changelog.md

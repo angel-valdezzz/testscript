@@ -1,0 +1,63 @@
+// No browser or remote service required.
+record User {
+    name: String
+    role: String
+    age: Int?
+}
+
+fn greeting(name: String) -> String {
+    return "Hello, ${name}"
+}
+
+flow verifyUser(user: User) {
+    step "Validate the user" {
+        expect len(user.name) > 0
+        expect user.role in ["tester", "developer"]
+    }
+}
+
+fixture session {
+    setup {
+        var language: String = "TestScript"
+        log "Session ready"
+    }
+    teardown {
+        log "Session closed"
+    }
+}
+
+data users = load("data/users.json")
+
+test "A valid user" tags ["smoke", "core"] using [session] {
+    var user: User = User(name: "Angel", role: "tester", age: null)
+    verifyUser(user)
+    expect greeting(user.name) == "Hello, Angel"
+    expect language == "TestScript"
+    expect user["name"] matches r"^[A-Z][a-z]+$"
+}
+
+test "Parameterized users" tags ["data", "core"] for each user in users {
+    step "Validate ${user.name}" {
+        expect len(user.name) > 0
+        expect user.role == "tester"
+    }
+}
+
+test "Control flow" tags ["core"] {
+    var total: Int = 0
+    for each number in [1, 2, 3] {
+        total = total + number
+    }
+    if total == 6 {
+        expect true
+    } else {
+        expect false
+    }
+    try {
+        var unavailable = 1 / 0
+    } catch error {
+        log error.message
+    } finally {
+        log "Cleanup completed"
+    }
+}

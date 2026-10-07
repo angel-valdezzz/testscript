@@ -1,0 +1,7 @@
+flow login(baseUrl: String, username: String) {
+    open baseUrl
+    type css("#username") with username
+    select css("#role") option "tester"
+    check css("#remember")
+    click css("button[type=submit]")
+}

@@ -1,0 +1,84 @@
+start: declaration*
+?declaration: import_decl | record_decl | function_decl | fixture_decl | test_decl | data_decl | binding
+import_decl: "import" "{" names "}" "from" STRING
+names: NAME ("," NAME)*
+record_decl: "record" NAME "{" field_decl* "}"
+field_decl: NAME ":" type
+function_decl: FUNCTION NAME "(" [parameters] ")" ["->" type] block
+FUNCTION.2: /(?:flow|fn)\b/
+parameters: parameter ("," parameter)*
+parameter: NAME ":" type
+fixture_decl: "fixture" NAME "{" "setup" block ["teardown" block] "}"
+test_decl: "test" STRING [tags] [using] [dataset] block
+tags: "tags" list_expr
+using: "using" "[" [names] "]"
+dataset: "for" "each" NAME "in" expr
+data_decl: "data" NAME "=" expr
+binding: BIND NAME [":" type] "=" expr
+BIND.2: /(?:var|const)\b/
+type: NAME ["[" type ("," type)* "]"] [NULLABLE]
+NULLABLE: "?"
+block: "{" statement* "}"
+?statement: binding | assignment | if_stmt | for_stmt | return_stmt | try_stmt | throw_stmt
+          | step_stmt | expect_stmt | web_stmt | log_stmt | skip_stmt | expr_stmt
+assignment: NAME "=" expr
+if_stmt: "if" expr block ["else" block]
+for_stmt: "for" "each" NAME "in" expr block
+return_stmt: "return" expr
+try_stmt: "try" block [catch_clause] [finally_clause]
+catch_clause: "catch" NAME block
+finally_clause: "finally" block
+throw_stmt: "throw" expr
+step_stmt: "step" STRING block
+expect_stmt: "expect" expr
+log_stmt: "log" expr
+skip_stmt: "skip" expr
+web_stmt: "open" expr                       -> web_open
+        | "click" expr                      -> web_click
+        | "type" expr "with" expr           -> web_type
+        | "select" expr "option" expr       -> web_select
+        | "check" expr                      -> web_check
+        | "screenshot" expr                 -> web_screenshot
+expr_stmt: expr
+?expr: or_expr
+?or_expr: and_expr (OR and_expr)*
+?and_expr: comparison (AND comparison)*
+OR.2: /or\b/
+AND.2: /and\b/
+?comparison: sum_expr (CMP sum_expr)*
+CMP.2: "==" | "!=" | ">=" | "<=" | ">" | "<" | "contains" | "matches" | "in"
+?sum_expr: product (ADD product)*
+ADD: "+" | "-"
+?product: unary (MUL unary)*
+MUL: "*" | "/" | "%"
+?unary: UNARY unary -> unary_expr
+      | postfix
+UNARY.2: /not\b/ | "-"
+?postfix: atom postfix_part*
+postfix_part: "." NAME -> member
+            | "[" expr "]" -> index
+            | "(" [arguments] ")" -> call
+arguments: argument ("," argument)*
+?argument: NAME ":" expr -> named_argument
+         | expr -> positional_argument
+?atom: STRING -> string
+     | NUMBER -> number
+     | "true" -> true
+     | "false" -> false
+     | "null" -> null
+     | REGEX -> regex
+     | NAME -> variable
+     | list_expr
+     | map_expr
+     | "(" expr ")"
+list_expr: "[" [expr ("," expr)* [","]] "]"
+map_expr: "{" [pair ("," pair)* [","]] "}"
+pair: (STRING | NAME) ":" expr
+REGEX.3: /r"(?:[^"\\]|\\.)*"/
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+NUMBER: /(?:[0-9]+(?:\.[0-9]+)?)/
+STRING: /"(?:[^"\\]|\\.)*"/
+%import common.WS
+%ignore WS
+%ignore /\/\/[^\n]*/
+%ignore /\/\*(?:.|\n)*?\*\//

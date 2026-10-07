@@ -1,0 +1,78 @@
+site_name: TestScript
+site_description: A typed language for readable Web and API tests.
+site_url: https://angel-valdezzz.github.io/testscript/
+repo_url: https://github.com/angel-valdezzz/testscript
+repo_name: angel-valdezzz/testscript
+docs_dir: docs/en
+site_dir: site
+hooks:
+  - docs/hooks.py
+theme:
+  name: material
+  font: false
+  custom_dir: docs/overrides
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.sections
+    - navigation.footer
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+extra:
+  generator: false
+  alternate:
+    - name: English
+      link: /testscript/
+      lang: en
+    - name: Español
+      link: /testscript/es/
+      lang: es
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/angel-valdezzz/testscript
+extra_css:
+  - assets/style.css
+extra_javascript:
+  - assets/product.js
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+nav:
+  - Overview: index.md
+  - Get started:
+      - Installation: getting-started.md
+      - Your first test: first-test.md
+      - Complete examples: examples.md
+  - Learn:
+      - Concepts: concepts.md
+      - Language guide: language.md
+      - Data and fixtures: data-fixtures.md
+      - Web automation: web.md
+      - API testing: api.md
+      - Errors and results: results.md
+  - Reference:
+      - CLI and configuration: cli.md
+      - Language specification: specification.md
+      - Architecture: architecture.md
+      - Roadmap: roadmap.md
+      - Changelog: changelog.md
+copyright: MIT · Angel Gerardo Molina Valdez
