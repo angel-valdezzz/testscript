@@ -149,6 +149,11 @@ class SeleniumAdapter:
                         "return [window.outerWidth-window.innerWidth, window.outerHeight-window.innerHeight]"
                     )
                     self.driver.set_window_size(viewport_width + delta[0], viewport_height + delta[1])
+                if headless and browser in {"chrome", "edge"}:
+                    self.driver.execute_cdp_cmd("Emulation.setDeviceMetricsOverride", {
+                        "width": viewport_width, "height": viewport_height,
+                        "deviceScaleFactor": 1, "mobile": False,
+                    })
         except Exception:
             self.driver.quit()
             raise

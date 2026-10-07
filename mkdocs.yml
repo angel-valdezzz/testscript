@@ -38,8 +38,6 @@ theme:
     - navigation.footer
     - content.code.copy
     - content.tabs.link
-    - navigation.instant
-    - navigation.instant.progress
     - navigation.tracking
     - search.highlight
     - search.suggest
@@ -56,9 +54,9 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/angel-valdezzz/testscript
 extra_css:
-  - assets/style.css
+  - assets/style.css?v=0.2.0
 extra_javascript:
-  - assets/product.js
+  - assets/product.js?v=0.2.0
 plugins:
   - search
 markdown_extensions:
