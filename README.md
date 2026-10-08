@@ -1,32 +1,32 @@
 <div align="center">
 
-<img src="docs/assets/logo.svg" width="80" height="80" alt="TestScript" />
+<img src="https://raw.githubusercontent.com/angel-valdezzz/testscript/main/docs/assets/logo.svg" width="80" height="80" alt="TestScript" />
 
 # TestScript
 
 
 A typed testing language for Web and API automation. Python interpreter · Lark grammar · `.tscr` files · `tscr` CLI.
 
-[User Guide](https://angel-valdezzz.github.io/testscript/) · [Language Reference](https://angel-valdezzz.github.io/testscript/language/) · [Examples](examples/) · [Español](README.es.md)
+[User Guide](https://angel-valdezzz.github.io/testscript/) · [Language Reference](https://angel-valdezzz.github.io/testscript/language/) · [PyPI](https://pypi.org/project/testscript-lang/) · [Español](https://github.com/angel-valdezzz/testscript/blob/main/README.es.md)
 
-[![Version](https://img.shields.io/badge/version-0.2.0-c4f581)](https://github.com/angel-valdezzz/testscript/releases/tag/v0.2.0) [![CI](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml/badge.svg)](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/testscript-lang?color=c4f581)](https://pypi.org/project/testscript-lang/) [![CI](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml/badge.svg)](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml)
 
 </div>
 
-> **0.2.0 / experimental.** The implementation and language specification evolve together. Not yet published on PyPI. The PyPI name `testscript` belongs to an unrelated project; this distribution uses `testscript-lang`.
+> **0.2.0 / experimental.** The implementation and language specification evolve together. Install the `testscript-lang` distribution; the PyPI name `testscript` belongs to an unrelated project.
 
-## Install from source
+## Install
 
 Python 3.12+:
 
 ```bash
-git clone https://github.com/angel-valdezzz/testscript.git
-cd testscript
-python -m pip install .
+python -m pip install testscript-lang
+tscr --version
 ```
 
 ```bash
-tscr --version
+git clone https://github.com/angel-valdezzz/testscript.git
+cd testscript
 tscr check examples/core.tscr
 tscr run examples/core.tscr
 ```
@@ -34,11 +34,11 @@ tscr run examples/core.tscr
 For browser automation:
 
 ```bash
-python -m pip install ".[playwright]"
+python -m pip install "testscript-lang[playwright]"
 python -m playwright install chromium
 ```
 
-Or `python -m pip install ".[selenium]"` with Chrome available. API and core examples do not need a browser.
+Or `python -m pip install "testscript-lang[selenium]"` with Chrome available. API and core examples do not need a browser. Example files are available in the repository and are not installed by the package.
 
 ## A small language with a testing purpose
 

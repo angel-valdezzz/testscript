@@ -2,12 +2,30 @@
 
 TestScript es un intérprete de Python para programas `.tscr`. Escribes TestScript; necesitas Python 3.12+ instalado para ejecutar el intérprete.
 
-!!! warning "Estado de distribución"
-    La versión 0.2.0 es experimental y todavía no está publicada en PyPI. `testscript` en PyPI es otro proyecto. Nuestra distribución se llama `testscript-lang`; el nombre no queda reservado hasta publicarlo. Usa el código fuente o el wheel.
+!!! warning "Lenguaje experimental"
+    La versión 0.2.0 está publicada en [PyPI](https://pypi.org/project/testscript-lang/). Instala `testscript-lang`; `testscript` en PyPI pertenece a otro proyecto. El lenguaje y su especificación continúan evolucionando.
+
+## Desde PyPI
+
+Crea y activa un entorno virtual; después instala:
+
+```bash
+python -m pip install testscript-lang
+tscr --version
+```
+
+Para Web, instala `"testscript-lang[playwright]"` y ejecuta `python -m playwright install chromium`, o instala `"testscript-lang[selenium]"` con Chrome disponible. El paquete base cubre API y core.
+
+El paquete instala el intérprete y CLI. Descarga los ejemplos por separado:
+
+```bash
+git clone https://github.com/angel-valdezzz/testscript.git
+cd testscript
+```
 
 ## Desde el código fuente
 
-Descarga el archivo del proyecto, extráelo y abre una terminal dentro de `testscript`. Una vez publicado el repositorio remoto, también podrás clonarlo desde `https://github.com/angel-valdezzz/testscript.git`.
+Clona el repositorio como se indica arriba o descarga y extrae su archivo. Abre una terminal dentro de `testscript`.
 
 ```bash
 python -m venv .venv
@@ -57,4 +75,4 @@ El paquete base cubre core/API. Los motores Web son dependencias opcionales; sus
 python -m pip install /ruta/testscript_lang-0.2.0-py3-none-any.whl
 ```
 
-El wheel instala intérprete y CLI; conserva los ejemplos por separado. Las instrucciones de PyPI se agregarán después de publicar realmente el paquete.
+El wheel instala intérprete y CLI; conserva los ejemplos por separado.

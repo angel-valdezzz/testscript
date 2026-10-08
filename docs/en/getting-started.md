@@ -2,12 +2,30 @@
 
 TestScript is a Python interpreter for `.tscr` programs. You write TestScript, not Python; Python 3.12+ must be installed to run the interpreter.
 
-!!! warning "Distribution status"
-    Version 0.2.0 is experimental and has not been published to PyPI. `testscript` on PyPI is an unrelated package. Our distribution is named `testscript-lang`; its name is not reserved until publication. Use the source or wheel installation below.
+!!! warning "Experimental language"
+    Version 0.2.0 is published on [PyPI](https://pypi.org/project/testscript-lang/). Install `testscript-lang`; `testscript` on PyPI is an unrelated package. The language and its specification continue to evolve.
+
+## Install from PyPI
+
+Create and activate a virtual environment, then install:
+
+```bash
+python -m pip install testscript-lang
+tscr --version
+```
+
+For Web automation, install `"testscript-lang[playwright]"` and run `python -m playwright install chromium`, or install `"testscript-lang[selenium]"` with Chrome available. API and core tests use only the base package.
+
+The package installs the interpreter and CLI. Clone the repository separately for the examples below:
+
+```bash
+git clone https://github.com/angel-valdezzz/testscript.git
+cd testscript
+```
 
 ## Install the source
 
-Download the project archive, extract it and open a terminal in its `testscript` directory. After the remote repository is published, you can also clone `https://github.com/angel-valdezzz/testscript.git`.
+Clone the repository as shown above, or download and extract its archive. Open a terminal in the `testscript` directory.
 
 ```bash
 python -m venv .venv
@@ -57,4 +75,4 @@ Core/API use only the base package. Browser extras are optional. Browser downloa
 python -m pip install /path/to/testscript_lang-0.2.0-py3-none-any.whl
 ```
 
-Keep examples separately: the wheel installs the interpreter and CLI, not this repository's example directory. Future PyPI instructions will replace source commands only after publication.
+Keep examples separately: the wheel installs the interpreter and CLI, not this repository's example directory.
