@@ -9,7 +9,7 @@
 
 A typed testing language for Web and API automation. Python interpreter · Lark grammar · `.tscr` files · `tscr` CLI.
 
-[User Guide](https://angel-valdezzz.github.io/testscript/getting-started/) · [Language Reference](https://angel-valdezzz.github.io/testscript/language/) · [PyPI](https://pypi.org/project/testscript-lang/)
+[Home](https://angel-valdezzz.github.io/testscript/) · [User Guide](https://angel-valdezzz.github.io/testscript/getting-started/) · [Language Reference](https://angel-valdezzz.github.io/testscript/language/) · [PyPI](https://pypi.org/project/testscript-lang/)
 
 [![PyPI](https://img.shields.io/pypi/v/testscript-lang?color=c4f581)](https://pypi.org/project/testscript-lang/) [![CI](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml/badge.svg)](https://github.com/angel-valdezzz/testscript/actions/workflows/ci.yml)
 
