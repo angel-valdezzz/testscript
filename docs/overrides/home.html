@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% set es = config.theme.language == 'es' %}
 {% block extrahead %}
-  <link rel="preload" href="{{ 'assets/testscript-fold.webp' | url }}" as="image" fetchpriority="high">
-  <link rel="stylesheet" href="{{ 'assets/landing.css' | url }}?v=fold-1">
+  <link rel="preload" href="{{ 'assets/testscript-fold.webp' | url }}?v=fold-2" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="{{ 'assets/landing.css' | url }}?v=fold-2">
 {% endblock %}
 {% block header %}
 <header class="ts-header" data-md-component="header">
@@ -18,9 +18,12 @@
     {% include "partials/palette.html" %}
     {% include "partials/javascripts/palette.html" %}
     <nav class="ts-languages" aria-label="{{ 'Idioma' if es else 'Language' }}">
-      <a href="/testscript/" lang="en" hreflang="en"{% if not es %} aria-current="page"{% endif %}>EN</a>
-      <span aria-hidden="true">/</span>
-      <a href="/testscript/es/" lang="es" hreflang="es"{% if es %} aria-current="page"{% endif %}>ES</a>
+      {% for alt in config.extra.alternate %}
+        {% if not loop.first %}<span aria-hidden="true">/</span>{% endif %}
+        <a href="{{ alt.link }}" lang="{{ alt.lang }}" hreflang="{{ alt.lang }}"
+           data-ts-language data-ts-fragments="{{ alt.fragments | tojson | forceescape }}"
+           {% if alt.current %}aria-current="page"{% endif %}>{{ alt.lang | upper }}</a>
+      {% endfor %}
     </nav>
   </div>
 </header>
@@ -30,7 +33,7 @@
 {% block content %}
 <div class="ts-landing" data-lang="{{ 'es' if es else 'en' }}">
   <div class="ts-art" aria-hidden="true">
-    <img class="ts-art-image" src="{{ 'assets/testscript-fold.webp' | url }}" alt="" width="1487" height="1058" fetchpriority="high" decoding="async">
+    <img class="ts-art-image" src="{{ 'assets/testscript-fold.webp' | url }}?v=fold-2" alt="" width="1486" height="1059" fetchpriority="high" decoding="async">
     <canvas class="ts-art-canvas"></canvas>
   </div>
   <section class="ts-message" aria-labelledby="ts-headline">

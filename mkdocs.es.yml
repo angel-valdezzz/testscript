@@ -5,6 +5,21 @@ docs_dir: docs/es
 site_dir: site/es
 theme:
   language: es
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Cambiar a modo oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Cambiar a modo claro
 nav:
   - Inicio: index.md
   - Primeros pasos:

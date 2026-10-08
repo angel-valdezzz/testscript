@@ -37,8 +37,8 @@ body:has(.ts-landing) .md-top { display: none; }
 .ts-header a:hover { color: #c4f581; }
 .ts-landing {
   position: relative; isolation: isolate; display: flex; flex-direction: column;
-  justify-content: flex-end; min-height: max(760px, 100svh);
-  padding: 110px clamp(24px, 5.15vw, 90px) 44px;
+  justify-content: center; min-height: 100svh;
+  padding: clamp(100px, 12svh, 120px) clamp(24px, 5.15vw, 90px) clamp(86px, 12svh, 116px);
   color: #f5f6f0; background: #090b0a; overflow: hidden;
 }
 .ts-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
@@ -46,9 +46,9 @@ body:has(.ts-landing) .md-top { display: none; }
 .ts-art-canvas { opacity: 0; }
 .ts-art[data-rendered="true"] .ts-art-canvas { opacity: 1; }
 .ts-art[data-rendered="true"] .ts-art-image { visibility: hidden; }
-.ts-message { padding-top: 350px; position: relative; max-width: 1000px; }
+.ts-message { padding-top: clamp(100px, 20svh, 220px); position: relative; max-width: 1000px; }
 .ts-landing .ts-message h1 {
-  margin: 0; color: #f5f6f0; font-size: clamp(58px, 6.3vw, 96px);
+  margin: 0; color: #f5f6f0; font-size: clamp(44px, min(6.3vw, 9svh), 96px);
   font-weight: 700; line-height: 1.06; letter-spacing: -.048em;
 }
 .ts-message h1 > span { display: block; }
@@ -65,7 +65,7 @@ body:has(.ts-landing) .md-top { display: none; }
 .ts-explore:hover { color: #c4f581 !important; }
 .ts-arrow { display: inline-flex; }
 .ts-arrow svg { width: 20px; height: 20px; fill: currentColor; }
-.ts-baseline { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 66px; }
+.ts-baseline { position: absolute; bottom: 26px; left: clamp(24px, 5.15vw, 90px); right: clamp(24px, 5.15vw, 90px); display: flex; justify-content: space-between; align-items: center; gap: 24px; }
 .ts-baseline p { margin: 0; font: 11px/1.8 ui-monospace, Consolas, monospace; color: #c3c9bd; letter-spacing: .06em; }
 .ts-baseline p span { padding: 0 10px; }
 .ts-motion { color: #c3c9bd; display: flex; align-items: center; gap: 6px; font-size: 11px; min-height: 44px; padding: 8px 0 8px 10px; cursor: pointer; }
@@ -75,15 +75,13 @@ body:has(.ts-landing) .md-top { display: none; }
 .ts-motion-play, .ts-motion[aria-pressed="true"] .ts-motion-pause { display: none; }
 .ts-motion[aria-pressed="true"] .ts-motion-play { display: inline-flex; }
 .ts-header :focus-visible, .ts-landing :focus-visible { outline: 2px solid #c4f581; outline-offset: 6px; }
-@media (min-width: 1700px) { .ts-landing { min-height: max(900px, 100svh); } .ts-message { padding-top: 440px; } }
 @media (max-width: 900px) {
   .ts-header { gap: 18px; height: 86px; }
   .ts-brand { gap: 10px; }
   .ts-brand span { font-size: 23px; }
   .ts-nav { gap: 22px; }
   .ts-header-controls { gap: 10px; }
-  .ts-landing { min-height: max(740px, 100svh); padding-bottom: 30px; }
-  .ts-message { padding-top: 290px; }
+  .ts-message { padding-top: clamp(80px, 18svh, 180px); }
   .ts-message p { max-width: 600px; }
 }
 @media (max-width: 620px) {
@@ -93,17 +91,17 @@ body:has(.ts-landing) .md-top { display: none; }
   .ts-header-controls { margin-left: auto; }
   .ts-nav { order: 3; width: 100%; margin: 0; gap: 24px; }
   .ts-nav a { font-size: 12px; padding: 2px 0 8px; }
-  .ts-landing { min-height: max(730px, 100svh); padding-top: 128px; padding-bottom: 24px; }
+  .ts-landing { padding-top: 128px; padding-bottom: 110px; }
   .ts-art-image { object-fit: cover; object-position: center; height: 560px; width: 170%; left: -70%; top: 100px; }
   .ts-art-canvas { width: 170%; height: 560px; left: -70%; top: 100px; }
-  .ts-message { padding-top: 255px; }
-  .ts-landing .ts-message h1 { font-size: clamp(40px, 10.6vw, 62px); letter-spacing: -.05em; }
+  .ts-message { padding-top: clamp(36px, 12svh, 110px); }
+  .ts-landing .ts-message h1 { font-size: clamp(36px, min(10.6vw, 8svh), 62px); letter-spacing: -.05em; }
   .ts-message p { margin-top: 20px; max-width: 420px; font-size: 17px; }
   .ts-landing-actions { gap: 16px; margin-top: 25px; }
   .ts-start { min-width: 155px; padding: 0 20px; gap: 25px; }
   .ts-start, .ts-explore { font-size: 13px; }
   .ts-explore { gap: 8px; }
-  .ts-baseline { align-items: flex-start; margin-top: 36px; gap: 10px; flex-wrap: wrap; }
+  .ts-baseline { bottom: 18px; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
   .ts-baseline p { font-size: 10px; padding-block: 12px; letter-spacing: 0; }
   .ts-baseline p span { padding: 0 5px; }
 }

@@ -2,6 +2,14 @@
 
 final result: blocked
 
+## Follow-up corrections — 2026-10-08
+
+The owner requested the changes identified in the live-site audit. The README's User Guide now opens Overview without an additional Home link. All 30 built documentation pages have matching English/Spanish destinations, translated section mappings where TOC structure matches, and a shared Material preference scope (`/testscript/`). Spanish theme controls are localized.
+
+The landing now sizes typography and spacing against viewport height, with the baseline outside the text flow and room beneath both actions. Fixed 760px minimum height and 350px text spacer have been removed. The existing folded raster was edited with the built-in image tool so the right reverse face and lower relief retain green continuity. The motion implementation was preserved. Asset dimensions: 1486 × 1059; 37,564 bytes.
+
+Strict bilingual build, all 30 page language destinations/fragment IDs/theme scope, README navigation, 44 language snippets, Ruff and JavaScript syntax checks passed. Local preview remains subject to the previously recorded browser blocker. The independently requested published-site audit is accessible; checks of the published corrections will be recorded after deployment. No active-motion or multi-viewport visual pass is claimed here.
+
 ## Intended design
 
 - Source visual truth: second displayed ImageGen option, `exec-ef9abec3-8a8f-49e8-9f76-68900d911119.png` in `/workspace/scratch/2ffb0fc245da/generated_images/`.
