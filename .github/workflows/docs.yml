@@ -22,6 +22,7 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: python scripts/check_docs.py
       - run: python scripts/build_docs.py
+      - run: python scripts/check_landing.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

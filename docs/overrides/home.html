@@ -1,65 +1,53 @@
 {% extends "base.html" %}
-{% block content %}
 {% set es = config.theme.language == 'es' %}
-<div class="ts-product" data-lang="{{ 'es' if es else 'en' }}">
-<section class="ts-hero">
-  <div class="ts-trace" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-  <div class="ts-intro">
-    <p class="ts-eyebrow"><span class="ts-dot"></span>{{ 'UN LENGUAJE PARA TESTING' if es else 'A LANGUAGE FOR TESTING' }}</p>
-    <h1>{{ 'Pruebas de Web y API' if es else 'Web and API tests' }}<br>{{ 'con' if es else 'with' }} <em>{{ 'tipos.' if es else 'types.' }}</em></h1>
-    <p class="ts-lead">{{ 'Flows reutilizables, datos tipados, HTTP declarativo y resultados HTML, JSON y JUnit.' if es else 'Web and API. Reusable flows. Typed data, declarative HTTP and HTML, JSON and JUnit results.' }}</p>
-    <div class="ts-actions"><a class="ts-button" href="{{ 'getting-started/' | url }}">{{ 'Empieza a construir' if es else 'Start building' }} <span aria-hidden="true">↗</span></a><a class="ts-secondary" href="{{ 'language/' | url }}">{{ 'Explora el lenguaje' if es else 'Explore the language' }} <span aria-hidden="true">→</span></a></div>
-    <div class="ts-install"><code>python -m pip install .</code><button aria-label="{{ 'Copiar comando' if es else 'Copy command' }}" data-copy="python -m pip install .">⧉</button><small>{{ 'Desde el código fuente · Python 3.12+' if es else 'From source · Python 3.12+' }}</small></div>
-    <p class="ts-release">v0.2.0 <span>EXPERIMENTAL</span> {{ '.tscr · CLI tscr · Código abierto' if es else '.tscr · tscr CLI · Open source' }}</p>
+{% block extrahead %}
+  <link rel="preload" href="{{ 'assets/testscript-fold.webp' | url }}" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="{{ 'assets/landing.css' | url }}?v=fold-1">
+{% endblock %}
+{% block header %}
+<header class="ts-header" data-md-component="header">
+  <a class="ts-brand" href="{{ nav.homepage.url | url }}" aria-label="TestScript">
+    <img src="{{ config.theme.logo | url }}" width="36" height="36" alt=""><span>TestScript</span>
+  </a>
+  <nav class="ts-nav" aria-label="{{ 'Navegación principal' if es else 'Main navigation' }}">
+    <a href="{{ 'getting-started/' | url }}">{{ 'Guía' if es else 'Guide' }}</a>
+    <a href="{{ 'language/' | url }}">{{ 'Referencia' if es else 'Reference' }}</a>
+    <a href="{{ config.repo_url }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </nav>
+  <div class="ts-header-controls">
+    {% include "partials/palette.html" %}
+    {% include "partials/javascripts/palette.html" %}
+    <nav class="ts-languages" aria-label="{{ 'Idioma' if es else 'Language' }}">
+      <a href="/testscript/" lang="en" hreflang="en"{% if not es %} aria-current="page"{% endif %}>EN</a>
+      <span aria-hidden="true">/</span>
+      <a href="/testscript/es/" lang="es" hreflang="es"{% if es %} aria-current="page"{% endif %}>ES</a>
+    </nav>
   </div>
-  <div class="ts-editor">
-    <div class="ts-editor-top"><span class="ts-window-dots" aria-hidden="true">● ● ●</span><span>hello.tscr</span><span class="ts-native">TESTSCRIPT</span></div>
-    <pre aria-label="TestScript code example"><code><span class="kw">flow</span> verifyName(name: <span class="ty">String</span>) {
-    <span class="kw">step</span> <span class="st">"Validate the name"</span> {
-        <span class="kw">expect</span> <span class="fn">len</span>(name) &gt; <span class="nu">0</span>
-    }
-}
-
-<span class="kw">test</span> <span class="st">"A valid user"</span> <span class="kw">tags</span> [<span class="st">"smoke"</span>] {
-    <span class="fn">verifyName</span>(<span class="st">"Angel"</span>)
-}</code></pre>
-    <div class="ts-editor-result"><span class="ts-check" aria-hidden="true">✓</span><div><b>A valid user</b><small>verifyName → Validate the name → expect</small></div><span class="ts-passed">PASSED</span></div>
-    <div class="ts-demo-label">{{ 'Ejecución ilustrativa · ejecuta el ejemplo con tscr' if es else 'Illustrative execution · run this example with tscr' }}</div>
+</header>
+{% endblock %}
+{% block tabs %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<div class="ts-landing" data-lang="{{ 'es' if es else 'en' }}">
+  <div class="ts-art" aria-hidden="true">
+    <img class="ts-art-image" src="{{ 'assets/testscript-fold.webp' | url }}" alt="" width="1487" height="1058" fetchpriority="high" decoding="async">
+    <canvas class="ts-art-canvas"></canvas>
   </div>
-</section>
-<section class="ts-strip" aria-label="{{ 'Características' if es else 'Features' }}"><span><b>{ }</b> {{ 'Sintaxis con intención' if es else 'Intent-first syntax' }}</span><span>WEB + API</span><span>PYTHON + LARK</span><span>PLAYWRIGHT / SELENIUM</span><span>JSON / JUNIT / HTML</span></section>
-<section class="ts-section ts-principles" id="concepts">
-  <div class="ts-section-head"><p class="ts-eyebrow">01 / {{ 'MENOS RUIDO, MÁS CLARIDAD' if es else 'LESS NOISE, MORE CLARITY' }}</p><h2>{{ 'Cada concepto tiene' if es else 'Every concept has' }}<br><em>{{ 'un propósito.' if es else 'a purpose.' }}</em></h2><p>{{ 'Una estructura pequeña para expresar comportamientos, preparar datos y entender los resultados.' if es else 'A small structure for expressing behavior, preparing data and understanding results.' }}</p></div>
-  <div class="ts-concept-grid">
-    <a href="{{ 'concepts/#test' | url }}"><span>01</span><h3>test</h3><p>{{ 'La unidad que ejecutas. Un objetivo claro y un resultado propio.' if es else 'The unit you run. One clear goal and its own result.' }}</p><b>→</b></a>
-    <a href="{{ 'concepts/#flow' | url }}"><span>02</span><h3>flow</h3><p>{{ 'Comportamientos que reutilizas y compones sin duplicar acciones.' if es else 'Behavior you reuse and compose without duplicating actions.' }}</p><b>→</b></a>
-    <a href="{{ 'concepts/#fn' | url }}"><span>03</span><h3>fn</h3><p>{{ 'Transforma datos con funciones que mantienen los efectos fuera.' if es else 'Transform data with functions that keep effects outside.' }}</p><b>→</b></a>
-    <a href="{{ 'concepts/#fixture' | url }}"><span>04</span><h3>fixture</h3><p>{{ 'Prepara recursos y limpia al finalizar, también cuando algo falla.' if es else 'Prepare resources and clean up afterward, including failures.' }}</p><b>→</b></a>
-    <a href="{{ 'concepts/#record-and-data' | url }}"><span>05</span><h3>record + data</h3><p>{{ 'Estructuras tipadas y casos parametrizados con CSV, JSON o YAML.' if es else 'Typed structures and parameterized cases from CSV, JSON or YAML.' }}</p><b>→</b></a>
-    <a href="{{ 'concepts/#step-and-expect' | url }}"><span>06</span><h3>step + expect</h3><p>{{ 'Cuenta la historia de la ejecución y verifica lo que importa.' if es else 'Tell the execution story and verify what matters.' }}</p><b>→</b></a>
-  </div>
-</section>
-<section class="ts-section ts-domains">
-  <div class="ts-section-head"><p class="ts-eyebrow">02 / {{ 'DOS DOMINIOS. UN LENGUAJE.' if es else 'TWO DOMAINS. ONE LANGUAGE.' }}</p><h2>{{ 'Del navegador' if es else 'From browser' }}<br><em>{{ 'a la respuesta.' if es else 'to response.' }}</em></h2></div>
-  <div class="ts-domain-panel">
-    <div class="ts-domain-tabs" role="tablist" aria-label="Examples"><button role="tab" id="tab-web" aria-selected="true" aria-controls="demo-web" data-tab="web">Web</button><button role="tab" id="tab-api" aria-selected="false" aria-controls="demo-api" data-tab="api" tabindex="-1">API</button><span>{{ 'Ejemplos reales incluidos' if es else 'Real examples included' }}</span></div>
-    <div id="demo-web" role="tabpanel" aria-labelledby="tab-web"><pre><code><span class="kw">flow</span> login(baseUrl: <span class="ty">String</span>, username: <span class="ty">String</span>) {
-    <span class="kw">open</span> baseUrl
-    <span class="kw">type</span> <span class="fn">css</span>(<span class="st">"#username"</span>) <span class="kw">with</span> username
-    <span class="kw">click</span> <span class="fn">css</span>(<span class="st">"button[type=submit]"</span>)
-}</code></pre><p>{{ 'Cambia el motor en la configuración. Conserva tus flows.' if es else 'Switch the engine in configuration. Keep your flows.' }} <a href="{{ 'web/' | url }}">{{ 'Guía Web →' if es else 'Web guide →' }}</a></p></div>
-    <div id="demo-api" role="tabpanel" aria-labelledby="tab-api" hidden><pre><code><span class="kw">test</span> <span class="st">"A missing user"</span> <span class="kw">tags</span> [<span class="st">"api"</span>] {
-    <span class="kw">var</span> response = <span class="kw">GET</span> <span class="st">"http://127.0.0.1:8765/users/missing"</span> {}
-    <span class="kw">expect</span> response.status == <span class="nu">404</span>
-    <span class="kw">expect</span> response.json.error == <span class="st">"User not found"</span>
-}</code></pre><p>{{ 'Los 4xx y 5xx son respuestas que puedes verificar.' if es else '4xx and 5xx are responses you can verify.' }} <a href="{{ 'api/' | url }}">{{ 'Guía API →' if es else 'API guide →' }}</a></p></div>
-  </div>
-</section>
-<section class="ts-section ts-results">
-  <div><p class="ts-eyebrow">03 / {{ 'CADA PASO VISIBLE' if es else 'EVERY STEP VISIBLE' }}</p><h2>{{ 'Una ejecución.' if es else 'One execution.' }}<br><em>{{ 'Toda la historia.' if es else 'The whole story.' }}</em></h2><p>{{ 'Flows, assertions, fixtures y evidencias en una línea de ejecución. Resultados en HTML, JSON y JUnit para revisión y CI.' if es else 'Flows, assertions, fixtures and evidence in one execution timeline. HTML, JSON and JUnit results for review and CI.' }}</p><a class="ts-secondary" href="{{ 'results/' | url }}">{{ 'Entiende los resultados' if es else 'Understand the results' }} →</a></div>
-  <ol class="ts-timeline"><li><small>FIXTURE</small><b>session / setup</b><span>✓</span></li><li><small>FLOW</small><b>verifyName</b><span>✓</span></li><li><small>STEP</small><b>Validate the name</b><span>✓</span></li><li><small>EXPECT</small><b>len(name) &gt; 0</b><span>✓</span></li><li><small>FIXTURE</small><b>session / teardown</b><span>✓</span></li></ol>
-</section>
-<section class="ts-section ts-status"><div><p class="ts-eyebrow">{{ 'CONSTRUIDO EN ABIERTO' if es else 'BUILT IN THE OPEN' }}</p><h2>{{ 'Pequeño hoy.' if es else 'Small today.' }}<br><em>{{ 'Preparado para crecer.' if es else 'Ready to grow.' }}</em></h2></div><div><p>{{ 'TestScript 0.2.0 es experimental. Web y API forman el primer alcance. Mobile, paralelismo y herramientas de editor están en el roadmap, no en esta versión.' if es else 'TestScript 0.2.0 is experimental. Web and API are the first scope. Mobile, parallel execution and editor tooling are on the roadmap, not in this release.' }}</p><div class="ts-actions"><a class="ts-button" href="{{ 'getting-started/' | url }}">{{ 'Escribe tu primera prueba' if es else 'Write your first test' }} ↗</a><a class="ts-secondary" href="{{ 'roadmap/' | url }}">Roadmap →</a></div></div></section>
-<footer class="ts-footer"><span>{ } TestScript</span><span>{{ 'Creado por' if es else 'Created by' }} Angel Gerardo Molina Valdez</span><a href="https://github.com/angel-valdezzz/testscript" target="_blank" rel="noopener">GitHub ↗</a></footer>
+  <section class="ts-message" aria-labelledby="ts-headline">
+    <h1 id="ts-headline"><span>{{ 'Menos ruido.' if es else 'Less noise.' }}</span><span class="ts-accent">{{ 'Más intención.' if es else 'More intent.' }}</span></h1>
+    <p>{{ 'Para pruebas automatizadas Web y API, con estructura y claridad.' if es else 'For automated Web and API tests, with structure and clarity.' }}</p>
+    <div class="ts-landing-actions">
+      <a class="ts-start" href="{{ 'getting-started/' | url }}">{{ 'Comenzar' if es else 'Get started' }}<span class="ts-arrow" aria-hidden="true">{% include ".icons/material/arrow-right.svg" %}</span></a>
+      <a class="ts-explore" href="{{ 'language/' | url }}">{{ 'Explorar el lenguaje' if es else 'Explore the language' }}<span class="ts-arrow" aria-hidden="true">{% include ".icons/material/arrow-right.svg" %}</span></a>
+    </div>
+  </section>
+  <footer class="ts-baseline">
+    <p>.tscr <span aria-hidden="true">·</span> Web + API <span aria-hidden="true">·</span> {{ 'Código abierto' if es else 'Open source' }}</p>
+    <button class="ts-motion" type="button" aria-pressed="false" hidden>
+      <span class="ts-motion-icon ts-motion-pause" aria-hidden="true">{% include ".icons/material/pause.svg" %}</span>
+      <span class="ts-motion-icon ts-motion-play" aria-hidden="true">{% include ".icons/material/play.svg" %}</span>
+      <span class="ts-motion-text">{{ 'Pausar animación' if es else 'Pause animation' }}</span>
+    </button>
+  </footer>
 </div>
 {% endblock %}

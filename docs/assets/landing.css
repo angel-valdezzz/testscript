@@ -1,0 +1,110 @@
+/* The landing keeps its identity while the palette still controls the docs. */
+body:has(.ts-landing) {
+  --md-default-bg-color: #090b0a;
+  --md-default-fg-color: #f5f6f0;
+  --md-primary-bg-color: #f5f6f0;
+  --md-typeset-a-color: #c4f581;
+  background: #090b0a;
+  color: #f5f6f0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+body:has(.ts-landing) .md-main { flex-grow: 1; }
+body:has(.ts-landing) .md-main__inner { margin: 0; max-width: none; }
+body:has(.ts-landing) .md-content { width: 100%; }
+body:has(.ts-landing) .md-content__inner { margin: 0; padding: 0; }
+body:has(.ts-landing) .md-content__inner::before,
+body:has(.ts-landing) .md-sidebar,
+body:has(.ts-landing) .md-top { display: none; }
+.ts-header {
+  position: absolute; inset: 0 0 auto; z-index: 5; height: 96px;
+  display: flex; align-items: center; gap: 32px;
+  padding: 0 clamp(24px, 5.15vw, 90px); color: #f5f6f0;
+}
+.ts-brand { display: flex; align-items: center; gap: 16px; color: #f5f6f0; }
+.ts-brand img { display: block; width: 36px; height: 36px; }
+.ts-brand span { font-size: 27px; font-weight: 700; letter-spacing: -1.3px; }
+.ts-nav { display: flex; align-items: center; gap: 36px; margin-left: auto; }
+.ts-nav a { color: #f5f6f0; font-size: 14px; padding: 12px 0; }
+.ts-header-controls { display: flex; align-items: center; gap: 22px; }
+.ts-header .md-header__option { margin: 0; }
+.ts-header .md-header__button { color: #d8dbd3; margin: 0; padding: 10px; }
+.ts-header .md-icon svg { width: 20px; height: 20px; }
+.ts-languages { display: flex; gap: 10px; align-items: center; font-size: 12px; }
+.ts-languages a { color: #aeb4ac; padding-block: 12px; }
+.ts-languages a[aria-current] { color: #c4f581; font-weight: 700; }
+.ts-languages > span { color: #798174; }
+.ts-header a { text-decoration: none; }
+.ts-header a:hover { color: #c4f581; }
+.ts-landing {
+  position: relative; isolation: isolate; display: flex; flex-direction: column;
+  justify-content: flex-end; min-height: max(760px, 100svh);
+  padding: 110px clamp(24px, 5.15vw, 90px) 44px;
+  color: #f5f6f0; background: #090b0a; overflow: hidden;
+}
+.ts-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.ts-art-image, .ts-art-canvas { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; object-position: center; }
+.ts-art-canvas { opacity: 0; }
+.ts-art[data-rendered="true"] .ts-art-canvas { opacity: 1; }
+.ts-art[data-rendered="true"] .ts-art-image { visibility: hidden; }
+.ts-message { padding-top: 350px; position: relative; max-width: 1000px; }
+.ts-landing .ts-message h1 {
+  margin: 0; color: #f5f6f0; font-size: clamp(58px, 6.3vw, 96px);
+  font-weight: 700; line-height: 1.06; letter-spacing: -.048em;
+}
+.ts-message h1 > span { display: block; }
+.ts-message .ts-accent { color: #c4f581; }
+.ts-message p {
+  margin: 22px 0 0; color: #e1e5dc; font-size: clamp(16px, 1.75vw, 24px);
+  line-height: 1.55; max-width: 740px; text-wrap: pretty;
+}
+.ts-landing-actions { display: flex; align-items: center; gap: 36px; margin-top: 32px; flex-wrap: wrap; }
+.ts-start, .ts-explore { display: inline-flex; align-items: center; justify-content: center; gap: 28px; min-height: 54px; font-size: 15px; font-weight: 600; text-decoration: none; }
+.ts-start { background: #c4f581; color: #131b0c !important; padding: 0 27px; min-width: 192px; border-radius: 7px; transition: background .2s; }
+.ts-start:hover { background: #d8ffa5; }
+.ts-explore { color: #f5f6f0 !important; gap: 14px; }
+.ts-explore:hover { color: #c4f581 !important; }
+.ts-arrow { display: inline-flex; }
+.ts-arrow svg { width: 20px; height: 20px; fill: currentColor; }
+.ts-baseline { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 66px; }
+.ts-baseline p { margin: 0; font: 11px/1.8 ui-monospace, Consolas, monospace; color: #c3c9bd; letter-spacing: .06em; }
+.ts-baseline p span { padding: 0 10px; }
+.ts-motion { color: #c3c9bd; display: flex; align-items: center; gap: 6px; font-size: 11px; min-height: 44px; padding: 8px 0 8px 10px; cursor: pointer; }
+.ts-motion[hidden] { display: none; }
+.ts-motion svg { width: 15px; height: 15px; fill: currentColor; }
+.ts-motion:hover { color: #c4f581; }
+.ts-motion-play, .ts-motion[aria-pressed="true"] .ts-motion-pause { display: none; }
+.ts-motion[aria-pressed="true"] .ts-motion-play { display: inline-flex; }
+.ts-header :focus-visible, .ts-landing :focus-visible { outline: 2px solid #c4f581; outline-offset: 6px; }
+@media (min-width: 1700px) { .ts-landing { min-height: max(900px, 100svh); } .ts-message { padding-top: 440px; } }
+@media (max-width: 900px) {
+  .ts-header { gap: 18px; height: 86px; }
+  .ts-brand { gap: 10px; }
+  .ts-brand span { font-size: 23px; }
+  .ts-nav { gap: 22px; }
+  .ts-header-controls { gap: 10px; }
+  .ts-landing { min-height: max(740px, 100svh); padding-bottom: 30px; }
+  .ts-message { padding-top: 290px; }
+  .ts-message p { max-width: 600px; }
+}
+@media (max-width: 620px) {
+  .ts-header { height: auto; min-height: 110px; padding-top: 22px; padding-bottom: 12px; flex-wrap: wrap; gap: 12px; }
+  .ts-brand img { width: 30px; height: 30px; }
+  .ts-brand span { font-size: 22px; }
+  .ts-header-controls { margin-left: auto; }
+  .ts-nav { order: 3; width: 100%; margin: 0; gap: 24px; }
+  .ts-nav a { font-size: 12px; padding: 2px 0 8px; }
+  .ts-landing { min-height: max(730px, 100svh); padding-top: 128px; padding-bottom: 24px; }
+  .ts-art-image { object-fit: cover; object-position: center; height: 560px; width: 170%; left: -70%; top: 100px; }
+  .ts-art-canvas { width: 170%; height: 560px; left: -70%; top: 100px; }
+  .ts-message { padding-top: 255px; }
+  .ts-landing .ts-message h1 { font-size: clamp(40px, 10.6vw, 62px); letter-spacing: -.05em; }
+  .ts-message p { margin-top: 20px; max-width: 420px; font-size: 17px; }
+  .ts-landing-actions { gap: 16px; margin-top: 25px; }
+  .ts-start { min-width: 155px; padding: 0 20px; gap: 25px; }
+  .ts-start, .ts-explore { font-size: 13px; }
+  .ts-explore { gap: 8px; }
+  .ts-baseline { align-items: flex-start; margin-top: 36px; gap: 10px; flex-wrap: wrap; }
+  .ts-baseline p { font-size: 10px; padding-block: 12px; letter-spacing: 0; }
+  .ts-baseline p span { padding: 0 5px; }
+}
+@media (prefers-reduced-motion: reduce) { .ts-landing *, .ts-header * { transition: none !important; } }
