@@ -43,6 +43,7 @@ theme:
     - search.suggest
 extra:
   generator: false
+  scope: /testscript/
   alternate:
     - name: English
       link: /testscript/
@@ -56,6 +57,7 @@ extra:
 extra_css:
   - assets/style.css?v=0.2.0
 extra_javascript:
+  - assets/navigation.js?v=locale-1
   - assets/product.js?v=0.2.0-fold-1
 plugins:
   - search

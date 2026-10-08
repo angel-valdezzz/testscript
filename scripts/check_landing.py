@@ -1,5 +1,6 @@
 """Check the built bilingual landing's routes, artwork, and sample-free surface."""
 
+import json
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -19,6 +20,7 @@ class Landing(HTMLParser):
         self.accent = False
         self.pause = False
         self.current_language = []
+        self.alternates = {}
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -29,6 +31,10 @@ class Landing(HTMLParser):
             self.links.append(attrs.get("href", ""))
             if attrs.get("aria-current") == "page":
                 self.current_language.append(attrs.get("lang"))
+            if "data-ts-language" in attrs:
+                self.alternates[attrs["lang"]] = (
+                    attrs["href"], json.loads(attrs["data-ts-fragments"])
+                )
         if tag in ("img", "script") and "src" in attrs:
             self.assets.append(attrs["src"])
         if tag == "link" and attrs.get("rel") in ("stylesheet", "preload"):
@@ -76,7 +82,28 @@ def main():
         languages = next(line for line in lines if "README.md)" in line and "README.es.md)" in line)
         docs = next(line for line in lines if "pypi.org/project/testscript-lang/)" in line and "language/)" in line)
         assert languages != docs and lines.index(languages) < lines.index(docs), name
-    print("Bilingual landing: routes, assets, locales, heading, motion control and README navigation passed")
+        label = "Guía de usuario" if name == "README.es.md" else "User Guide"
+        root = "https://angel-valdezzz.github.io/testscript/" + ("es/" if name == "README.es.md" else "")
+        assert f"[{label}]({root})" in docs, name
+        assert "[Home]" not in docs and "[Inicio]" not in docs, name
+    pages = list(SITE.glob("**/index.html"))
+    for page in pages:
+        source = page.read_text()
+        parsed = Landing()
+        parsed.feed(source)
+        relative = page.relative_to(SITE).as_posix().removesuffix("index.html")
+        route = relative.removeprefix("es/")
+        assert set(parsed.alternates) == {"en", "es"}, page
+        assert '__md_scope=new URL("/testscript/",location)' in source, page
+        for locale, (href, fragments) in parsed.alternates.items():
+            expected = "/testscript/" + ("es/" if locale == "es" else "") + route
+            assert href == expected, f"{page}: language link loses current page: {href}"
+            target = local_target(href, page)
+            translated = Landing()
+            translated.feed(target.read_text())
+            assert set(fragments).issubset(parsed.ids), page
+            assert set(fragments.values()).issubset(translated.ids), page
+    print(f"Bilingual landing and README navigation passed; {len(pages)} pages preserve language routes, sections and theme scope")
 
 
 if __name__ == "__main__":
