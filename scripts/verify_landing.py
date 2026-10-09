@@ -1,5 +1,6 @@
 """Exercise the approved landing with the actual native documentation controls."""
 
+import traceback
 from functools import partial
 from hashlib import sha256
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -52,12 +53,15 @@ def check_navigation(browser, base, output):
     page.screenshot(path=str(output / "documentation-header.png"))
     page.goto(base + "language/")
     anchor = page.locator("h2[id]").nth(3).get_attribute("id")
-    page.evaluate("fragment=>{location.hash=fragment}", anchor)
+    page.locator('.md-nav--secondary a[href="#' + anchor + '"]').click()
+    expect(page.locator("#" + anchor)).to_be_in_viewport()
     page.locator(".md-select button").click()
     link = page.locator('[data-ts-language][lang="es"]')
     translated = link.evaluate("(el,id)=>JSON.parse(el.dataset.tsFragments)[id]", anchor)
+    print("Section navigation:", {"source": page.url, "destination": link.get_attribute("href"), "target": translated})
     link.click()
     page.wait_for_url("**/es/language/**")
+    print("Translated location:", page.url)
     # Tracking may normalize the address; the translated section must actually be visible.
     expect(page.locator("#" + translated)).to_be_in_viewport()
     expect(page.locator("body")).to_have_attribute("data-md-color-scheme", "slate")
@@ -110,8 +114,7 @@ def check_motion(browser, base, output):
     expect(page.locator("#ts-pause")).to_be_enabled()
     expect(page.locator("#ts-pause")).to_have_attribute("aria-pressed", "true")
     page.locator("#ts-pause").click()
-    page.wait_for_timeout(800)
-    assert point(page) != frozen
+    page.wait_for_function("p=>{const b=document.querySelector('#ts-beam');return +b.getAttribute('cx')!==p[0] || +b.getAttribute('cy')!==p[1]}", arg=frozen, timeout=5000)
     # Capture the full connected return; each frame must stay geometrically continuous.
     page.evaluate("""() => new Promise(resolve => {
       let last=null,max=0,cycles=0,active='';const started=performance.now();
@@ -191,7 +194,8 @@ def main():
             for name, check in (("navigation", check_navigation), ("motion", check_motion)):
                 try:
                     check(browser, base, output)
-                except (AssertionError, Exception) as error:
+                except Exception as error:
+                    traceback.print_exc()
                     failures.append((name, str(error)))
                     for context in browser.contexts:
                         for page in context.pages:
