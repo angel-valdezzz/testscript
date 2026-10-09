@@ -2,6 +2,7 @@
 {% set es = config.theme.language == 'es' %}
 {% block extrahead %}
 {{ super() }}
+<script>window.tsEntryFragment = location.hash;</script>
 <link rel="preload" href="{{ 'assets/fonts/Inter-Bold.woff2' | url }}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{{ 'assets/landing.css' | url }}?content={{ config.extra.asset_versions['landing.css'] }}">
 {% endblock %}
