@@ -15,4 +15,11 @@
   }
   syncFragments();
   addEventListener("hashchange", syncFragments);
+  // Keep the documentation header and tabs on the same gradient phase.
+  requestAnimationFrame(() => {
+    const header = document.querySelector(".md-header"), tabs = document.querySelector(".md-tabs");
+    const top = header?.getAnimations().find(animation => animation.animationName === "ts-header-flow");
+    const bottom = tabs?.getAnimations().find(animation => animation.animationName === "ts-header-flow");
+    if (top && bottom) bottom.currentTime = top.currentTime;
+  });
 })();
