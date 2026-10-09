@@ -17,11 +17,4 @@
   addEventListener("hashchange", syncFragments);
   // Material's tracking can use replaceState, which does not emit hashchange.
   for (const link of links) link.addEventListener("click", syncFragments);
-  // Keep the documentation header and tabs on the same gradient phase.
-  requestAnimationFrame(() => {
-    const header = document.querySelector(".md-header"), tabs = document.querySelector(".md-tabs");
-    const top = header?.getAnimations().find(animation => animation.animationName === "ts-header-flow");
-    const bottom = tabs?.getAnimations().find(animation => animation.animationName === "ts-header-flow");
-    if (top && bottom) bottom.currentTime = top.currentTime;
-  });
 })();

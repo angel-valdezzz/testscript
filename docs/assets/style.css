@@ -6,8 +6,10 @@ body{background:var(--ts-bg)}.md-grid{max-width:1280px}.md-header{background:#11
 [data-md-color-scheme="default"] .md-typeset h1,[data-md-color-scheme="default"] .md-typeset h2,[data-md-color-scheme="default"] .md-typeset h3{color:#17231b}
 [data-md-color-scheme="default"] .md-footer{background:#edf3e8;color:#17231b}
 
-/* Shared moving surface for documentation header and navigation tabs. */
-body:not(:has(.ts-home)) :is(.md-header,.md-tabs){background:linear-gradient(90deg,#17271e 0%,#36502a 44%,#233835 76%,#17271e 100%);background-size:260% 100%;color:#eff5e9;border:0;animation:ts-header-flow 26s ease-in-out infinite}
+/* One inherited animation phase keeps the documentation header and tabs uniform. */
+@property --ts-header-position{syntax:"<percentage>";inherits:true;initial-value:0%}
+body:not(:has(.ts-home)){animation:ts-header-flow 26s ease-in-out infinite}
+body:not(:has(.ts-home)) :is(.md-header,.md-tabs){background:linear-gradient(90deg,#17271e 0%,#36502a 44%,#233835 76%,#17271e 100%);background-size:260% 100%;color:#eff5e9;border:0;background-position:var(--ts-header-position) 50%}
 body:not(:has(.ts-home)) .md-logo img{width:30px;height:30px}
-@keyframes ts-header-flow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-@media(prefers-reduced-motion:reduce){.md-header,.md-tabs{animation:none!important}}
+@keyframes ts-header-flow{0%,100%{--ts-header-position:0%}50%{--ts-header-position:100%}}
+@media(prefers-reduced-motion:reduce){body:not(:has(.ts-home)){animation:none!important}}

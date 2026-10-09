@@ -47,7 +47,7 @@ def check_navigation(browser, base, output):
     assert page.evaluate("""() => {
       const h=document.querySelector('.md-header'),t=document.querySelector('.md-tabs');
       const a=getComputedStyle(h),b=getComputedStyle(t);
-      return a.animationName==='ts-header-flow' && a.animationName===b.animationName &&
+      return getComputedStyle(document.body).animationName==='ts-header-flow' &&
         a.backgroundImage===b.backgroundImage && a.backgroundPosition===b.backgroundPosition;
     }""")
     page.screenshot(path=str(output / "documentation-header.png"))
