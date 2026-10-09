@@ -62,8 +62,12 @@
   }
   function path(points) { return points.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' '); }
   function geometry() {
-    const rect = score.getBoundingClientRect();
+    let rect = score.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return;
+    const contentBottom = Math.max(...concepts.map(el => el.getBoundingClientRect().bottom - rect.top));
+    // Leave separate lanes for the return trace and the caption, even when translations wrap.
+    score.style.minHeight = `${Math.ceil(contentBottom + 55)}px`;
+    rect = score.getBoundingClientRect();
     $('.ts-connections').setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
     const pins = concepts.map(el => {
       const box = el.querySelector('.ts-pin i').getBoundingClientRect();

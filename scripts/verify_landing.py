@@ -157,15 +157,18 @@ def main():
                     )
                     if width >= 760:
                         assert page.locator(".ts-cover .ts-primary").evaluate("el=>el.getBoundingClientRect().bottom<=innerHeight")
+                    page.screenshot(path=str(output / f"{locale}-{width}-{height}.png"), full_page=True)
                     # Connector lanes must stay outside all visible descriptions and keywords.
-                    assert page.evaluate("""() => {
+                    collision = page.evaluate("""() => {
                       const s=document.querySelector('#ts-score').getBoundingClientRect();
                       const p=document.querySelector('#ts-track'),n=p.getTotalLength();
                       const boxes=[...document.querySelectorAll('.ts-concept h2,.ts-concept p')].map(e=>e.getBoundingClientRect());
                       for(let d=0;d<n;d+=3){const q=p.getPointAtLength(d),x=q.x+s.left,y=q.y+s.top;
-                        if(boxes.some(b=>x>b.left+1&&x<b.right-1&&y>b.top+1&&y<b.bottom-1))return false;}
-                      return true;
-                    }"""), (locale, width, "connector intersects text")
+                        const hit=boxes.find(b=>x>b.left+1&&x<b.right-1&&y>b.top+1&&y<b.bottom-1);
+                        if(hit)return {x,y,box:{left:hit.left,right:hit.right,top:hit.top,bottom:hit.bottom},score:{width:s.width,height:s.height}};}
+                      return null;
+                    }""")
+                    assert collision is None, (locale, width, collision)
                     page.screenshot(path=str(output / f"{locale}-{width}-{height}.png"), full_page=True)
                     page.locator('label[for="__palette_1"]').click()
                     expect(page.locator("body")).to_have_attribute("data-md-color-scheme", "slate")
