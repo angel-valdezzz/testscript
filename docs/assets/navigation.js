@@ -19,9 +19,10 @@
   // Capture the tracked section as the language menu opens. Keep the chosen href
   // stable while focusing/clicking a menu item, which may change scroll tracking.
   for (const menu of document.querySelectorAll(".md-select")) {
-    menu.addEventListener("pointerenter", syncFragments);
     menu.querySelector("button")?.addEventListener("pointerdown", syncFragments);
-    menu.querySelector("button")?.addEventListener("focus", syncFragments);
+    menu.querySelector("button")?.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") syncFragments();
+    });
   }
   // Restore incoming anchors after fonts and native layout have settled. Otherwise
   // tracking can clear the hash while the translated document is still at the top.

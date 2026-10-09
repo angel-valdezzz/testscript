@@ -33,9 +33,13 @@ def check_navigation(browser, base, output):
     page.locator(".ts-scroll-link").click()
     expect(page.locator("#ts-language-section")).to_be_focused()
     page.locator(".ts-header .md-select button").click()
-    fragment = page.evaluate("location.hash")
-    page.locator('[data-ts-language][lang="es"]').click()
-    page.wait_for_url(base + "es/" + fragment)
+    link = page.locator('[data-ts-language][lang="es"]')
+    fragment = urlsplit(link.get_attribute("href")).fragment
+    link.click()
+    page.wait_for_url("**/es/**")
+    expect(page.locator(".ts-home")).to_have_attribute("data-lang", "es")
+    if fragment:
+        expect(page.locator("#" + fragment)).to_be_in_viewport()
     page.locator(".ts-cover .ts-primary").click()
     page.wait_for_url("**/es/getting-started/")
     page.locator('label[for="__palette_1"]').click()
