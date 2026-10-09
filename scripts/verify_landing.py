@@ -146,7 +146,11 @@ def main():
                     errors = []
                     page.on("pageerror", lambda error, found=errors: found.append(str(error)))
                     page.goto(base + ("es/" if locale == "es" else ""))
-                    expect(page.locator("#ts-pause")).to_be_visible()
+                    try:
+                        expect(page.locator("#ts-pause")).to_be_visible()
+                    except AssertionError as error:
+                        page.screenshot(path=str(output / f"{locale}-{width}-{height}-failure.png"), full_page=True)
+                        raise AssertionError((locale, width, errors)) from error
                     page.evaluate("document.fonts.ready")
                     assert page.locator("h1").count() == 1
                     assert page.locator("pre,code,canvas,table").count() == 0

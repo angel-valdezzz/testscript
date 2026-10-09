@@ -80,7 +80,7 @@
       let points;
       if (i === 3) points = [p, {x: rect.width + 8, y: p.y}, {x: rect.width + 8, y: bottom}, {x: -8, y: bottom}, {x: -8, y: next.y}, next];
       else if (mobile && i === 1) {
-        const upperBottom = Math.max(...ts-concepts.slice(0, 2).map(el => el.getBoundingClientRect().bottom - rect.top));
+        const upperBottom = Math.max(...concepts.slice(0, 2).map(el => el.getBoundingClientRect().bottom - rect.top));
         const lane = (upperBottom + next.y) / 2;
         points = [p, {x: rect.width + 8, y: p.y}, {x: rect.width + 8, y: lane}, {x: -8, y: lane}, {x: -8, y: next.y}, next];
       } else points = [p, {x: next.x - 18, y: p.y}, {x: next.x - 18, y: next.y}, next];
