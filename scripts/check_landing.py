@@ -1,4 +1,4 @@
-"""Check the built bilingual landing's routes, artwork, and sample-free surface."""
+"""Check the built bilingual landing's routes, language map and sample-free surface."""
 
 import json
 from html.parser import HTMLParser
@@ -16,7 +16,7 @@ class Landing(HTMLParser):
         self.assets = []
         self.tags = []
         self.ids = []
-        self.canvases = 0
+        self.concepts = 0
         self.accent = False
         self.pause = False
         self.current_language = []
@@ -39,9 +39,9 @@ class Landing(HTMLParser):
             self.assets.append(attrs["src"])
         if tag == "link" and attrs.get("rel") in ("stylesheet", "preload"):
             self.assets.append(attrs.get("href", ""))
-        self.canvases += tag == "canvas"
-        self.accent |= "ts-accent" in attrs.get("class", "").split()
-        self.pause |= tag == "button" and "ts-motion" in attrs.get("class", "").split()
+        self.concepts += "ts-concept" in attrs.get("class", "").split()
+        self.accent |= "ts-green" in attrs.get("class", "").split()
+        self.pause |= tag == "button" and attrs.get("id") == "ts-pause"
 
 
 def local_target(href, page):
@@ -68,14 +68,15 @@ def main():
         landing.feed(source)
         expected = "Menos ruido." if language == "es" else "Less noise."
         assert expected in source, f"{language}: missing heading"
-        assert landing.accent and landing.pause and landing.canvases == 1
+        assert landing.accent and landing.pause and landing.concepts == 4
+        assert "ts-language-section" in landing.ids
         assert len(landing.ids) == len(set(landing.ids)), f"{language}: duplicate HTML IDs"
         assert landing.current_language == [language], f"{language}: active locale"
         assert not {"pre", "code", "table"}.intersection(landing.tags), f"{language}: sample in landing"
         for href in landing.links + landing.assets:
             target = local_target(href, page)
             assert target is None or target.is_file(), f"{language}: missing route or asset: {href}"
-        for asset in ("landing.css", "product.js", "testscript-fold.webp"):
+        for asset in ("landing.css", "product.js", "Inter-Bold.woff2"):
             assert any(asset in url for url in landing.assets), f"{language}: missing {asset}"
     for name in ("README.md", "README.es.md"):
         lines = (ROOT / name).read_text().splitlines()

@@ -1,188 +1,146 @@
-/* The commissioned artwork is displaced gently; the interface stays HTML. */
+/* Approved language-map motion. Native MkDocs owns palette and locale navigation. */
 (() => {
-  "use strict";
-  const root = document.querySelector(".ts-landing");
+  'use strict';
+  const root = document.querySelector('.ts-home');
   if (!root) return;
-  const art = root.querySelector(".ts-art");
-  const image = art.querySelector("img");
-  const canvas = art.querySelector("canvas");
-  const toggle = root.querySelector(".ts-motion");
-  const text = toggle.querySelector(".ts-motion-text");
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-  const coarse = matchMedia("(pointer: coarse)");
-  let paused = false, visible = true, frame = 0, time = 0, last = 0;
-  let pointer = [0, 0], target = [0, 0];
-  let gl, program, texture, buffer;
-  let ready = false, disposed = false;
-  const vertex = [
-    "attribute vec2 position;", "varying vec2 uv;",
-    "void main() { uv = (position + 1.0) * 0.5; gl_Position = vec4(position, 0.0, 1.0); }"
-  ].join("\n");
-  const fragment = [
-    "precision mediump float;",
-    "varying vec2 uv;",
-    "uniform sampler2D artwork;",
-    "uniform vec2 resolution, imageSize, pointer;",
-    "uniform float time;",
-    "void main() {",
-    "  float screenAspect = resolution.x / resolution.y;",
-    "  float imageAspect = imageSize.x / imageSize.y;",
-    "  vec2 cover = screenAspect > imageAspect",
-    "    ? vec2(1.0, imageAspect / screenAspect) : vec2(screenAspect / imageAspect, 1.0);",
-    "  vec2 p = (uv - 0.5) * cover + 0.5;",
-    // Restrict deformation to the sculpture above the quiet text region.
-    "  float region = smoothstep(0.26, 0.68, p.y);",
-    "  float wave = sin(p.x * 6.0 + p.y * 3.0 + time * 0.42);",
-    "  float counterWave = cos(p.x * 3.6 - p.y * 4.0 - time * 0.28);",
-    "  p.x += region * (counterWave * 0.009 + pointer.x * 0.006);",
-    "  p.y += region * (wave * 0.019 + pointer.y * 0.008);",
-    "  p = clamp(p, vec2(0.001), vec2(0.999));",
-    "  vec3 color = texture2D(artwork, p).rgb;",
-    "  float lime = smoothstep(0.04, 0.22, color.g - color.b);",
-    "  float light = 1.0 + region * lime * (wave * 0.045 + pointer.x * 0.035);",
-    "  gl_FragColor = vec4(color * light, 1.0);",
-    "}"
-  ].join("\n");
-  function shader(type, source) {
-    const result = gl.createShader(type);
-    gl.shaderSource(result, source);
-    gl.compileShader(result);
-    if (!gl.getShaderParameter(result, gl.COMPILE_STATUS)) {
-      gl.deleteShader(result);
-      throw new Error("Decorative surface unavailable");
+  const $ = selector => root.querySelector(selector);
+  const concepts = [...root.querySelectorAll('.ts-concept')];
+  const score = $('#ts-score');
+  const pause = $('#ts-pause');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const language = root.dataset.lang;
+  const copy = {
+    es: {pause:'Pausar animación',resume:'Reanudar animación',reduced:'Movimiento reducido'},
+    en: {pause:'Pause animation',resume:'Resume animation',reduced:'Reduced motion'}
+  };
+  let paused = false;
+  let elapsed = 0;
+  let last = null;
+  let visible = true;
+  let routes = [];
+  const hold = 1500;
+  const transfers = [1100, 1100, 1100, 1600];
+  const cycle = hold * 4 + transfers.reduce((a, b) => a + b, 0);
+  function updatePause() {
+    pause.disabled = reduced.matches;
+    pause.setAttribute('aria-pressed', String(paused));
+    const state = reduced.matches ? 'reduced' : paused ? 'resume' : 'pause';
+    pause.querySelector('span').textContent = copy[language][state];
+    pause.querySelector('path').setAttribute('d', paused && !reduced.matches ? 'M5 3l7 5-7 5Z' : 'M5 3v10M11 3v10');
+    root.classList.toggle('ts-paused', paused || reduced.matches);
+  }
+  pause.addEventListener('click', () => { if (!reduced.matches) { paused = !paused; updatePause(); } });
+  document.addEventListener('visibilitychange', () => { last = null; });
+  if (typeof IntersectionObserver !== 'undefined') new IntersectionObserver(entries => { visible = entries[0].isIntersecting; last = null; }, {threshold: 0}).observe(score);
+
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  // Rounded polylines keep the light in the vacant connector lanes, never across the words.
+  function rounded(points) {
+    const samples = [{...points[0]}];
+    let previous = points[0];
+    function line(end) {
+      const start = previous;
+      const steps = Math.max(1, Math.ceil(distance(start, end) / 4));
+      for (let i = 1; i <= steps; i++) samples.push({x: lerp(start.x, end.x, i / steps), y: lerp(start.y, end.y, i / steps)});
+      previous = end;
     }
-    return result;
+    for (let i = 1; i < points.length - 1; i++) {
+      const before = points[i - 1], corner = points[i], after = points[i + 1];
+      const radius = Math.min(23, distance(before, corner) * .3, distance(corner, after) * .3);
+      const enter = {x: lerp(corner.x, before.x, radius / distance(before, corner)), y: lerp(corner.y, before.y, radius / distance(before, corner))};
+      const leave = {x: lerp(corner.x, after.x, radius / distance(corner, after)), y: lerp(corner.y, after.y, radius / distance(corner, after))};
+      line(enter);
+      for (let j = 1; j <= 16; j++) {
+        const t = j / 16, u = 1 - t;
+        samples.push({x: u * u * enter.x + 2 * u * t * corner.x + t * t * leave.x, y: u * u * enter.y + 2 * u * t * corner.y + t * t * leave.y});
+      }
+      previous = leave;
+    }
+    line(points.at(-1));
+    return samples;
   }
-  function stop() {
-    cancelAnimationFrame(frame);
-    frame = 0;
-    last = 0;
+  function path(points) { return points.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' '); }
+  function geometry() {
+    let rect = score.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+    const contentBottom = Math.max(...concepts.map(el => el.getBoundingClientRect().bottom - rect.top));
+    // Leave separate lanes for the return trace and the caption, even when translations wrap.
+    score.style.minHeight = `${Math.ceil(contentBottom + 55)}px`;
+    rect = score.getBoundingClientRect();
+    $('.ts-connections').setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
+    const pins = concepts.map(el => {
+      const box = el.querySelector('.ts-pin i').getBoundingClientRect();
+      return {x: box.left - rect.left + box.width / 2, y: box.top - rect.top + box.height / 2};
+    });
+    const mobile = pins[2].x < pins[1].x;
+    const bottom = rect.height - 31;
+    routes = pins.map((p, i) => {
+      const next = pins[(i + 1) % 4];
+      let points;
+      if (i === 3) points = [p, {x: rect.width + 8, y: p.y}, {x: rect.width + 8, y: bottom}, {x: -8, y: bottom}, {x: -8, y: next.y}, next];
+      else if (mobile && i === 1) {
+        const upperBottom = Math.max(...concepts.slice(0, 2).map(el => el.getBoundingClientRect().bottom - rect.top));
+        const lane = (upperBottom + next.y) / 2;
+        points = [p, {x: rect.width + 8, y: p.y}, {x: rect.width + 8, y: lane}, {x: -8, y: lane}, {x: -8, y: next.y}, next];
+      } else points = [p, {x: next.x - 18, y: p.y}, {x: next.x - 18, y: next.y}, next];
+      return rounded(points);
+    });
+    $('#ts-track').setAttribute('d', routes.map(path).join(' '));
+    paint();
   }
-  function draw() {
-    if (!ready || gl.isContextLost()) return;
-    gl.useProgram(program);
-    gl.uniform2f(gl.getUniformLocation(program, "resolution"), canvas.width, canvas.height);
-    gl.uniform2f(gl.getUniformLocation(program, "imageSize"), image.naturalWidth, image.naturalHeight);
-    gl.uniform2f(gl.getUniformLocation(program, "pointer"), pointer[0], pointer[1]);
-    gl.uniform1f(gl.getUniformLocation(program, "time"), time);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  function energy(index, amount) {
+    concepts[index].style.setProperty('--energy', amount.toFixed(3));
+    concepts[index].style.setProperty('--lift', amount.toFixed(3));
   }
-  function resize() {
-    if (!ready) return;
-    const bounds = canvas.getBoundingClientRect();
-    // Limit resolution and rendering rate for this purely decorative effect.
-    const density = Math.min(devicePixelRatio || 1, 1.5, 1800 / Math.max(1, bounds.width));
-    canvas.width = Math.max(1, Math.round(bounds.width * density));
-    canvas.height = Math.max(1, Math.round(bounds.height * density));
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    draw();
-  }
-  function tick(stamp) {
-    if (!ready || paused || reduced.matches || !visible || document.hidden || disposed) {
-      stop();
+  function paint() {
+    if (!routes.length) return;
+    concepts.forEach((_, i) => energy(i, reduced.matches ? .8 : .12));
+    if (reduced.matches) {
+      $('#ts-trail').setAttribute('d', ''); $('#ts-halo').setAttribute('d', '');
+      $('#ts-beam').style.opacity = '0'; $('#ts-orbit').style.opacity = '0';
+      score.dataset.phase = 'reduced';
       return;
     }
-    if (!last || stamp - last >= 1000 / 30) {
-      if (last) time += Math.min((stamp - last) / 1000, 0.1);
-      last = stamp;
-      pointer = pointer.map((value, i) => value + (target[i] - value) * 0.05);
-      draw();
-    }
-    frame = requestAnimationFrame(tick);
+    let t = elapsed % cycle, current = 0;
+    while (t >= hold + transfers[current]) { t -= hold + transfers[current]; current++; }
+    const moving = t >= hold;
+    const progress = moving ? (t - hold) / transfers[current] : 0;
+    const smooth = progress * progress * (3 - 2 * progress);
+    const route = routes[current];
+    const position = smooth * (route.length - 1);
+    const low = Math.floor(position), high = Math.min(low + 1, route.length - 1);
+    const dot = {x: lerp(route[low].x, route[high].x, position - low), y: lerp(route[low].y, route[high].y, position - low)};
+    const trailLength = Math.max(2, Math.round(route.length * .16));
+    const trailPoints = moving ? [...route.slice(Math.max(0, low - trailLength), low + 1), dot] : [];
+    const d = trailPoints.length ? path(trailPoints) : '';
+    $('#ts-trail').setAttribute('d', d); $('#ts-halo').setAttribute('d', d);
+    $('#ts-beam').setAttribute('cx', dot.x); $('#ts-beam').setAttribute('cy', dot.y);
+    $('#ts-beam').style.opacity = '1';
+    const spin = elapsed / 260;
+    $('#ts-orbit').setAttribute('cx', dot.x + Math.cos(spin) * 10);
+    $('#ts-orbit').setAttribute('cy', dot.y + Math.sin(spin) * 10);
+    $('#ts-orbit').style.opacity = moving ? '.3' : '.8';
+    energy(current, moving ? 1 - .85 * smooth : .92 + .08 * Math.sin(t / 180));
+    if (moving) energy((current + 1) % 4, .12 + .88 * smooth);
+    score.dataset.active = String(current);
+    score.dataset.phase = moving ? 'travel' : 'hold';
   }
-  function sync() {
-    stop();
-    toggle.hidden = !ready || reduced.matches;
-    toggle.setAttribute("aria-pressed", String(paused));
-    text.textContent = root.dataset.lang === "es"
-      ? (paused ? "Reanudar animación" : "Pausar animación")
-      : (paused ? "Resume animation" : "Pause animation");
-    art.dataset.motion = reduced.matches ? "reduced" : (paused ? "paused" : "running");
-    if (reduced.matches) {
-      art.dataset.rendered = "false";
-    } else if (ready) {
-      art.dataset.rendered = "true";
-      draw();
-      if (!paused && visible && !document.hidden) frame = requestAnimationFrame(tick);
-    }
+  function animate(now) {
+    if (last !== null && !paused && !reduced.matches && visible && !document.hidden) elapsed += Math.min(now - last, 80);
+    last = now;
+    paint();
+    requestAnimationFrame(animate);
   }
-  function init() {
-    if (disposed || !image.naturalWidth) return;
-    try {
-      gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "low-power" });
-      if (!gl) return; // The image is already the complete default fallback.
-      const vs = shader(gl.VERTEX_SHADER, vertex), fs = shader(gl.FRAGMENT_SHADER, fragment);
-      program = gl.createProgram();
-      gl.attachShader(program, vs);
-      gl.attachShader(program, fs);
-      gl.linkProgram(program);
-      gl.deleteShader(vs);
-      gl.deleteShader(fs);
-      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error("Surface unavailable");
-      gl.useProgram(program);
-      buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
-      const position = gl.getAttribLocation(program, "position");
-      gl.enableVertexAttribArray(position);
-      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-      texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-      gl.uniform1i(gl.getUniformLocation(program, "artwork"), 0);
-      ready = true;
-      resize();
-      sync();
-    } catch {
-      ready = false;
-      art.dataset.rendered = "false";
-      toggle.hidden = true;
-    }
-  }
-  root.addEventListener("pointermove", (event) => {
-    if (coarse.matches || reduced.matches || paused) return;
-    const bounds = root.getBoundingClientRect();
-    target = [(event.clientX - bounds.left) / bounds.width * 2 - 1,
-      1 - (event.clientY - bounds.top) / bounds.height * 2];
-  }, { passive: true });
-  root.addEventListener("pointerleave", () => { target = [0, 0]; });
-  toggle.addEventListener("click", () => { paused = !paused; sync(); });
-  reduced.addEventListener("change", sync);
-  document.addEventListener("visibilitychange", sync);
-  canvas.addEventListener("webglcontextlost", (event) => {
-    event.preventDefault();
-    ready = false;
-    stop();
-    art.dataset.rendered = "false";
-    toggle.hidden = true;
+  reduced.addEventListener('change', () => { last = null; updatePause(); paint(); });
+  window.addEventListener('resize', geometry);
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(geometry).observe(score);
+  updatePause(); geometry(); pause.hidden = false;
+  const search = document.querySelector('.ts-search-trigger');
+  search?.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); search.click(); }
   });
-  canvas.addEventListener("webglcontextrestored", init);
-  const resizeObserver = new ResizeObserver(resize);
-  resizeObserver.observe(art);
-  const intersectionObserver = new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    sync();
-  });
-  intersectionObserver.observe(root);
-  window.addEventListener("pagehide", () => {
-    disposed = true;
-    stop();
-    resizeObserver.disconnect();
-    intersectionObserver.disconnect();
-  });
-  window.addEventListener("pageshow", (event) => {
-    if (event.persisted) {
-      disposed = false;
-      resizeObserver.observe(art);
-      intersectionObserver.observe(root);
-      sync();
-    }
-  });
-  if (image.complete) init();
-  else image.addEventListener("load", init, { once: true });
+  root.querySelector('.ts-scroll-link').addEventListener('click', () => $('#ts-language-section').focus({preventScroll:true}));
+  if (document.fonts) document.fonts.ready.then(geometry);
+  requestAnimationFrame(animate);
 })();

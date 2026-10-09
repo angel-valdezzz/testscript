@@ -1,8 +1,31 @@
 """Share design assets between the two independently built language sites."""
 import shutil
+from hashlib import sha256
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from markdown import Markdown
+
+
+def on_config(config):
+    """Version shared CSS/JS from their contents, including home-only assets."""
+    assets = Path(__file__).parent / "assets"
+    config.extra["asset_versions"] = {
+        path.name: sha256(path.read_bytes()).hexdigest()[:16]
+        for path in assets.iterdir() if path.suffix in {".css", ".js"}
+    }
+    for setting in ("extra_css", "extra_javascript"):
+        updated = []
+        for asset in config[setting]:
+            url = urlsplit(asset)
+            version = config.extra["asset_versions"].get(Path(url.path).name)
+            if not url.scheme and not url.netloc and version:
+                query = [(key, value) for key, value in parse_qsl(url.query) if key != "content"]
+                query.append(("content", version))
+                asset = urlunsplit(url._replace(query=urlencode(query)))
+            updated.append(asset)
+        config[setting] = updated
+    return config
 
 
 def on_pre_build(config):
@@ -43,6 +66,10 @@ def on_page_context(context, page, config, nav):
         fragments = {}
         if [level for level, _ in headings] == [level for level, _ in translated]:
             fragments = {left[1]: right[1] for left, right in zip(headings, translated)}
+        if page.is_homepage:
+            fragments.update({key: key for key in (
+                "ts-main", "ts-hero-title", "ts-language-section", "ts-language-title", "ts-finish-title",
+            )})
         alternates.append({
             "name": alternate["name"], "lang": language,
             "link": root + ("es/" if language == "es" else "") + page.url,
