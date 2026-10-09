@@ -53,7 +53,7 @@ def check_navigation(browser, base, output):
     page.screenshot(path=str(output / "documentation-header.png"))
     page.goto(base + "language/")
     anchor = page.locator("h2[id]").nth(3).get_attribute("id")
-    page.locator('.md-nav--secondary a[href="#' + anchor + '"]').click()
+    page.locator('.md-sidebar--secondary a[href="#' + anchor + '"]').click()
     expect(page.locator("#" + anchor)).to_be_in_viewport()
     page.locator(".md-select button").click()
     link = page.locator('[data-ts-language][lang="es"]')
