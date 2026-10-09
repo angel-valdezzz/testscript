@@ -19,6 +19,11 @@ jobs:
       - run: python scripts/build_docs.py
       - run: python scripts/check_landing.py
       - run: python -m playwright install --with-deps chromium
+      - uses: actions/upload-artifact@v4
+        with:
+          name: landing-browser
+          path: ~/.cache/ms-playwright/chromium_headless_shell-*/
+          retention-days: 1
       - run: python scripts/verify_landing.py
       - uses: actions/upload-artifact@v4
         if: always()
