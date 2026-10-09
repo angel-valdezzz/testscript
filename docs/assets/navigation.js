@@ -1,6 +1,7 @@
 /* Language destinations are generated per page; retain translated sections. */
 (() => {
   "use strict";
+  const entryFragment = location.hash;
   const links = document.querySelectorAll("[data-ts-language]");
   function syncFragments() {
     let fragment;
@@ -15,6 +16,26 @@
   }
   syncFragments();
   addEventListener("hashchange", syncFragments);
-  // Material's tracking can use replaceState, which does not emit hashchange.
-  for (const link of links) link.addEventListener("click", syncFragments);
+  // Tracking uses replaceState after scrolling. Refresh before choosing a language,
+  // without rewriting the clicked destination after focus has changed the scroll position.
+  let scrollRefresh;
+  addEventListener("scroll", () => {
+    clearTimeout(scrollRefresh);
+    scrollRefresh = setTimeout(syncFragments, 350);
+  }, {passive: true});
+  // Restore incoming anchors after fonts and native layout have settled. Otherwise
+  // tracking can clear the hash while the translated document is still at the top.
+  addEventListener("load", async () => {
+    if (!entryFragment) return;
+    if (document.fonts) await document.fonts.ready;
+    let id;
+    try { id = decodeURIComponent(entryFragment.slice(1)); } catch { return; }
+    const target = document.getElementById(id);
+    if (!target) return;
+    requestAnimationFrame(() => {
+      history.replaceState(history.state, "", entryFragment);
+      target.scrollIntoView();
+      syncFragments();
+    });
+  }, {once: true});
 })();
