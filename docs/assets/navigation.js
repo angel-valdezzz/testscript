@@ -13,6 +13,15 @@
       link.href = url.href;
     }
   }
+  // MkDocs Material's automatic locale handler reconstructs destinations from
+  // sitemaps and can discard translated anchors. Our generated href is authoritative.
+  for (const link of links) link.addEventListener("click", event => event.stopPropagation());
+  for (const button of document.querySelectorAll(".md-select button")) {
+    button.addEventListener("pointerdown", syncFragments);
+    button.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") syncFragments();
+    });
+  }
   syncFragments();
   addEventListener("hashchange", syncFragments);
 })();

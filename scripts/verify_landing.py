@@ -24,12 +24,10 @@ def point(page):
 
 def check_navigation(browser, base, output):
     page = browser.new_page(viewport={"width": 1440, "height": 1024})
-    page.add_init_script("console.log('NAV ENTRY',location.href)")
-    page.on("console",lambda message: print("Browser:",message.text))
-    page.on("framenavigated",lambda frame: print("Navigated:",frame.url))
     page.goto(base)
     page.locator(".ts-search-trigger").focus()
     page.keyboard.press("Enter")
+    expect(page.locator(".md-search-result__meta")).not_to_contain_text("Initializing search", timeout=30000)
     page.locator('[data-md-component="search-query"]').fill("fixture")
     expect(page.locator(".md-search-result__link").first).to_be_visible(timeout=30000)
     page.keyboard.press("Escape")
@@ -65,12 +63,8 @@ def check_navigation(browser, base, output):
     page.locator(".md-select button").click()
     link = page.locator('[data-ts-language][lang="es"]')
     translated = link.evaluate("(el,id)=>JSON.parse(el.dataset.tsFragments)[id]", anchor)
-    print("Before hover:",page.url,link.get_attribute("href"))
-    link.hover()
-    print("After hover:",page.url,link.get_attribute("href"))
     link.click()
     page.wait_for_url("**/es/language/**")
-    print("After click:",page.url)
     # Tracking may normalize the address; the translated section must actually be visible.
     expect(page.locator("#" + translated)).to_be_in_viewport()
     expect(page.locator("body")).to_have_attribute("data-md-color-scheme", "slate")

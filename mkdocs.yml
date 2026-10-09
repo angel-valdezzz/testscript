@@ -38,6 +38,7 @@ theme:
     - navigation.footer
     - content.code.copy
     - content.tabs.link
+    - navigation.tracking
     - search.highlight
     - search.suggest
 extra:
