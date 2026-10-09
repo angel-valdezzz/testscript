@@ -51,11 +51,15 @@ def check_navigation(browser, base, output):
     }""")
     page.screenshot(path=str(output / "documentation-header.png"))
     page.goto(base + "language/")
-    anchor = page.locator("h2[id]").first.get_attribute("id")
+    anchor = page.locator("h2[id]").nth(3).get_attribute("id")
     page.evaluate("fragment=>{location.hash=fragment}", anchor)
     page.locator(".md-select button").click()
-    page.locator('[data-ts-language][lang="es"]').click()
-    page.wait_for_url("**/es/language/#*")
+    link = page.locator('[data-ts-language][lang="es"]')
+    translated = link.evaluate("(el,id)=>JSON.parse(el.dataset.tsFragments)[id]", anchor)
+    link.click()
+    page.wait_for_url("**/es/language/**")
+    # Tracking may normalize the address; the translated section must actually be visible.
+    expect(page.locator("#" + translated)).to_be_in_viewport()
     expect(page.locator("body")).to_have_attribute("data-md-color-scheme", "slate")
     page.locator(".md-logo").first.click()
     expect(page.locator("#ts-pause")).to_be_visible()
@@ -183,8 +187,16 @@ def main():
                     assert cover == page.locator(".ts-cover").evaluate("el=>getComputedStyle(el).backgroundColor")
                     assert not errors, errors
                     page.close()
-            check_navigation(browser, base, output)
-            check_motion(browser, base, output)
+            failures = []
+            for name, check in (("navigation", check_navigation), ("motion", check_motion)):
+                try:
+                    check(browser, base, output)
+                except (AssertionError, Exception) as error:
+                    failures.append((name, str(error)))
+                    for context in browser.contexts:
+                        for page in context.pages:
+                            page.screenshot(path=str(output / (name + "-failure.png")), full_page=True)
+                            page.close()
             reduced = browser.new_page(reduced_motion="reduce")
             reduced.goto(base)
             expect(reduced.locator("#ts-pause")).to_be_disabled()
@@ -196,6 +208,7 @@ def main():
             static.screenshot(path=str(output / "no-javascript.png"))
             static.close()
             browser.close()
+            assert not failures, failures
         print("Chromium passed: EN/ES, five viewports, native search/navigation/palette, fixed cover palette, "
               "text-safe connector lanes, complete motion loop, pause, reduced motion, no-JS and asset cache.")
     finally:
