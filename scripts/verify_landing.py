@@ -62,10 +62,8 @@ def check_navigation(browser, base, output):
     page.locator(".md-select button").click()
     link = page.locator('[data-ts-language][lang="es"]')
     translated = link.evaluate("(el,id)=>JSON.parse(el.dataset.tsFragments)[id]", anchor)
-    print("Section navigation:", {"source": page.url, "destination": link.get_attribute("href"), "target": translated})
     link.click()
     page.wait_for_url("**/es/language/**")
-    print("Translated location:", page.url, page.evaluate("window.tsEntryFragment"))
     # Tracking may normalize the address; the translated section must actually be visible.
     expect(page.locator("#" + translated)).to_be_in_viewport()
     expect(page.locator("body")).to_have_attribute("data-md-color-scheme", "slate")
