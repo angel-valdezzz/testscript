@@ -30,3 +30,9 @@ body{background:var(--ts-bg)}.md-grid{max-width:1280px}.md-header{background:#11
 [data-md-color-scheme="default"] .ts-concept-grid h3,[data-md-color-scheme="default"] .ts-footer>span:first-child{color:#17231b}
 [data-md-color-scheme="default"] .ts-button{background:#c5f584}
 [data-md-color-scheme="default"] .md-typeset a:hover{color:#24570b}
+
+/* Shared moving surface for documentation header and navigation tabs. */
+body:not(:has(.ts-home)) :is(.md-header,.md-tabs){background:linear-gradient(90deg,#17271e 0%,#36502a 44%,#233835 76%,#17271e 100%);background-size:260% 100%;color:#eff5e9;border:0;animation:ts-header-flow 26s ease-in-out infinite}
+body:not(:has(.ts-home)) .md-logo img{width:30px;height:30px}
+@keyframes ts-header-flow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@media(prefers-reduced-motion:reduce){.md-header,.md-tabs{animation:none!important}}

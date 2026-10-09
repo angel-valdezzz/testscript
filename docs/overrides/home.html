@@ -1,56 +1,75 @@
 {% extends "base.html" %}
 {% set es = config.theme.language == 'es' %}
 {% block extrahead %}
-  <link rel="preload" href="{{ 'assets/testscript-fold.webp' | url }}?v=fold-3" as="image" fetchpriority="high">
-  <link rel="stylesheet" href="{{ 'assets/landing.css' | url }}?v=fold-3">
+{{ super() }}
+<link rel="preload" href="{{ 'assets/fonts/Inter-Bold.woff2' | url }}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ 'assets/landing.css' | url }}?content={{ config.extra.asset_versions['landing.css'] }}">
 {% endblock %}
 {% block header %}
-<header class="ts-header" data-md-component="header">
-  <a class="ts-brand" href="{{ nav.homepage.url | url }}" aria-label="TestScript">
-    <img src="{{ config.theme.logo | url }}" width="36" height="36" alt=""><span>TestScript</span>
-  </a>
-  <nav class="ts-nav" aria-label="{{ 'Navegación principal' if es else 'Main navigation' }}">
-    <a href="{{ 'getting-started/' | url }}">{{ 'Guía' if es else 'Guide' }}</a>
-    <a href="{{ 'language/' | url }}">{{ 'Referencia' if es else 'Reference' }}</a>
-    <a href="{{ config.repo_url }}" target="_blank" rel="noopener noreferrer">GitHub</a>
-  </nav>
-  <div class="ts-header-controls">
-    {% include "partials/palette.html" %}
-    {% include "partials/javascripts/palette.html" %}
-    <nav class="ts-languages" aria-label="{{ 'Idioma' if es else 'Language' }}">
-      {% for alt in config.extra.alternate %}
-        {% if not loop.first %}<span aria-hidden="true">/</span>{% endif %}
-        <a href="{{ alt.link }}" lang="{{ alt.lang }}" hreflang="{{ alt.lang }}"
-           data-ts-language data-ts-fragments="{{ alt.fragments | tojson | forceescape }}"
-           {% if alt.current %}aria-current="page"{% endif %}>{{ alt.lang | upper }}</a>
-      {% endfor %}
+  <header class="ts-header" data-md-component="header">
+    <a class="ts-brand" href="{{ nav.homepage.url | url }}" aria-label="TestScript"><img src="{{ config.theme.logo | url }}" width="34" height="34" alt=""><span>TestScript</span></a>
+    <nav aria-label="{{ 'Navegación principal' if es else 'Main navigation' }}">
+      <a href="{{ "getting-started/" | url }}">{{ "Guía" if es else "Guide" }}</a>
+      <a href="{{ "language/" | url }}">{{ "Referencia" if es else "Reference" }}</a>
+      <a href="https://github.com/angel-valdezzz/testscript">GitHub</a>
     </nav>
-  </div>
-</header>
+    <div class="ts-tools">
+      {% include "partials/palette.html" %}
+      {% include "partials/javascripts/palette.html" %}
+      {% include "partials/alternate.html" %}
+      <label class="ts-search-trigger md-icon" for="__search" tabindex="0" role="button" aria-label="{{ lang.t('search') }}">{% include ".icons/material/magnify.svg" %}</label>
+      {% include "partials/search.html" %}
+    </div>
+  </header>
 {% endblock %}
 {% block tabs %}{% endblock %}
+{% block site_nav %}{% endblock %}
 {% block footer %}{% endblock %}
-{% block content %}
-<div class="ts-landing" data-lang="{{ 'es' if es else 'en' }}">
-  <div class="ts-art" aria-hidden="true">
-    <img class="ts-art-image" src="{{ 'assets/testscript-fold.webp' | url }}?v=fold-3" alt="" width="1485" height="1059" fetchpriority="high" decoding="async">
-    <canvas class="ts-art-canvas"></canvas>
+{% block container %}
+<div class="ts-home" data-lang="{{ config.theme.language }}">
+<a class="ts-skip" href="#ts-main">{{ "Ir al contenido" if es else "Skip to content" }}</a>
+<div class="ts-cover">
+
+  <div id="ts-main">
+    <section class="ts-hero" aria-labelledby="ts-hero-title">
+      <div class="ts-intro">
+        <div class="ts-headline">
+          <p class="ts-eyebrow"><span class="ts-status-dot"></span><span>{{ "UN LENGUAJE PARA TU INTENCIÓN" if es else "A LANGUAGE FOR YOUR INTENT" }}</span></p>
+          <h1 id="ts-hero-title"><span>{{ "Menos ruido." if es else "Less noise." }}</span><br><span class="ts-green">{{ "Más intención." if es else "More intent." }}</span></h1>
+        </div>
+        <div class="ts-pitch">
+          <p class="ts-description">{{ "Automatización Web y API,<br>con estructura y claridad." if es else "Web and API automation,<br>with structure and clarity." }}</p>
+          <div class="ts-actions"><a class="ts-primary ts-button" href="{{ "getting-started/" | url }}"><span>{{ "Comenzar" if es else "Get started" }}</span><span aria-hidden="true">↗</span></a><a class="ts-secondary" href="{{ "language/" | url }}"><span>{{ "Explorar el lenguaje" if es else "Explore the language" }}</span><span aria-hidden="true">→</span></a></div>
+          <p class="ts-technical">.tscr <span>·</span> Python <span>·</span> Web + API</p>
+        </div>
+      </div>
+      <div class="ts-score" aria-label="{{ 'Cuatro piezas del lenguaje' if es else 'Four language concepts' }}" id="ts-score">
+        <div class="ts-score-heading"><span>{{ "LA ESTRUCTURA DE UNA INTENCIÓN" if es else "THE STRUCTURE OF AN INTENTION" }}</span><span class="ts-score-badge">{{ "LENGUAJE TIPADO" if es else "TYPED LANGUAGE" }}</span></div>
+        <svg class="ts-connections" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><defs><filter id="ts-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"/></filter></defs><path id="ts-track"/><path id="ts-halo" filter="url(#ts-glow)"/><path id="ts-trail"/><circle id="ts-beam" r="4"/><circle id="ts-orbit" r="2"/></svg>
+        <div class="ts-concepts">
+          <article class="ts-concept" data-concept="0"><div class="ts-pin"><span>01</span><i></i></div><h2>test<span class="ts-syntax">{</span></h2><p>{{ "Define qué quieres comprobar." if es else "Define what you want to verify." }}</p></article>
+          <article class="ts-concept" data-concept="1"><div class="ts-pin"><span>02</span><i></i></div><h2>flow<span class="ts-syntax">( )</span></h2><p>{{ "Reutiliza el comportamiento." if es else "Reuse the behavior." }}</p></article>
+          <article class="ts-concept" data-concept="2"><div class="ts-pin"><span>03</span><i></i></div><h2>step<span class="ts-syntax">{</span></h2><p>{{ "Dale un nombre a cada paso." if es else "Give each step a name." }}</p></article>
+          <article class="ts-concept" data-concept="3"><div class="ts-pin"><span>04</span><i></i></div><h2>expect<span class="ts-syntax">✓</span></h2><p>{{ "Expresa lo que debe cumplirse." if es else "Express what must be true." }}</p></article>
+        </div>
+        <p class="ts-map-note">{{ "Un recorrido visual por el lenguaje." if es else "A visual journey through the language." }}</p>
+      </div>
+      <div class="ts-hero-bottom">
+        <a class="ts-scroll-link" href="#ts-language-section"><span class="ts-scroll-circle" aria-hidden="true">↓</span><span>{{ "Descubre TestScript" if es else "Discover TestScript" }}</span></a>
+        <button id="ts-pause" class="ts-pause" hidden aria-pressed="false"><svg class="ts-pause-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10M11 3v10"/></svg><span>{{ "Pausar animación" if es else "Pause animation" }}</span></button>
+      </div>
+    </section>
   </div>
-  <section class="ts-message" aria-labelledby="ts-headline">
-    <h1 id="ts-headline"><span>{{ 'Menos ruido.' if es else 'Less noise.' }}</span><span class="ts-accent">{{ 'Más intención.' if es else 'More intent.' }}</span></h1>
-    <p>{{ 'Para pruebas automatizadas Web y API, con estructura y claridad.' if es else 'For automated Web and API tests, with structure and clarity.' }}</p>
-    <div class="ts-landing-actions">
-      <a class="ts-start" href="{{ 'getting-started/' | url }}">{{ 'Comenzar' if es else 'Get started' }}<span class="ts-arrow" aria-hidden="true">{% include ".icons/material/arrow-right.svg" %}</span></a>
-      <a class="ts-explore" href="{{ 'language/' | url }}">{{ 'Explorar el lenguaje' if es else 'Explore the language' }}<span class="ts-arrow" aria-hidden="true">{% include ".icons/material/arrow-right.svg" %}</span></a>
-    </div>
-  </section>
-  <footer class="ts-baseline">
-    <p>.tscr <span aria-hidden="true">·</span> Web + API <span aria-hidden="true">·</span> {{ 'Código abierto' if es else 'Open source' }}</p>
-    <button class="ts-motion" type="button" aria-pressed="false" hidden>
-      <span class="ts-motion-icon ts-motion-pause" aria-hidden="true">{% include ".icons/material/pause.svg" %}</span>
-      <span class="ts-motion-icon ts-motion-play" aria-hidden="true">{% include ".icons/material/play.svg" %}</span>
-      <span class="ts-motion-text">{{ 'Pausar animación' if es else 'Pause animation' }}</span>
-    </button>
-  </footer>
+</div>
+<section class="ts-language-section" id="ts-language-section" tabindex="-1" aria-labelledby="ts-language-title">
+  <div class="ts-section-intro"><p class="ts-eyebrow">{{ "DE LA INTENCIÓN A LA EJECUCIÓN" if es else "FROM INTENT TO EXECUTION" }}</p><h2 id="ts-language-title">{{ "Cada pieza tiene<br>su lugar." if es else "Each piece has<br>its place." }}</h2><p>{{ "TestScript es un lenguaje pequeño y tipado. Describe el comportamiento de tus pruebas y hace observable su ejecución." if es else "TestScript is a small, typed language. It describes test behavior and makes execution observable." }}</p></div>
+  <div class="ts-language-rows">
+    <article><span class="ts-row-index">01</span><div><h3>{{ "Comportamiento y datos" if es else "Behavior and data" }}</h3><p>{{ "Los flows encapsulan acciones reutilizables. Las funciones calculan y transforman datos sin efectos Web ni HTTP." if es else "Flows encapsulate reusable actions. Functions compute and transform data without Web or HTTP effects." }}</p></div><span class="ts-row-keyword">flow / fn</span></article>
+    <article><span class="ts-row-index">02</span><div><h3>{{ "Preparación y limpieza" if es else "Setup and cleanup" }}</h3><p>{{ "Los fixtures organizan setup y teardown. Los datos en CSV, JSON o YAML permiten ejecutar una prueba por cada fila." if es else "Fixtures organize setup and teardown. Data in CSV, JSON or YAML lets you run a test for each row." }}</p></div><span class="ts-row-keyword">fixture / data</span></article>
+    <article><span class="ts-row-index">03</span><div><h3>{{ "Resultados observables" if es else "Observable results" }}</h3><p>{{ "Pasos con nombre, verificaciones explícitas y resultados en JSON, JUnit XML y HTML para revisar la ejecución." if es else "Named steps, explicit assertions and results in JSON, JUnit XML and HTML to review execution." }}</p></div><span class="ts-row-keyword">step / expect</span></article>
+  </div>
+</section>
+<section class="ts-finish" aria-labelledby="ts-finish-title"><p class="ts-eyebrow">{{ "PYTHON · PLAYWRIGHT · SELENIUM" if es else "PYTHON · PLAYWRIGHT · SELENIUM" }}</p><h2 id="ts-finish-title">{{ "Una intención clara.<br>Un siguiente paso." if es else "A clear intention.<br>A next step." }}</h2><div><p>{{ "Empieza con la instalación y tu primera prueba en la guía de usuario." if es else "Start with installation and your first test in the user guide." }}</p><a class="ts-button ts-primary" href="{{ "getting-started/" | url }}"><span>{{ "Abrir la guía" if es else "Open the guide" }}</span><span aria-hidden="true">↗</span></a></div></section>
+<footer><a class="ts-brand" href="{{ nav.homepage.url | url }}"><img src="{{ config.theme.logo | url }}" width="28" height="28" alt=""><span>TestScript</span></a><span>{{ "Código abierto · v0.2 · Experimental" if es else "Open source · v0.2 · Experimental" }}</span><a href="https://github.com/angel-valdezzz/testscript">GitHub →</a></footer>
 </div>
 {% endblock %}
